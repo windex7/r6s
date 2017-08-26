@@ -1,10 +1,13 @@
 package plugin.R6S;
 
 import java.io.File;
+import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import net.minecraft.server.v1_9_R2.Item;
 
 public class R6SPlugin extends JavaPlugin implements Listener {
 	private static R6SPlugin instance;
@@ -46,6 +49,19 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				devfile.createNewFile();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setStackSize(String itemname, int stacksize) {
+		try {
+			Item item = Item.d(itemname);
+			Field field;
+			field = Item.class.getDeclaredField("maxStackSize");
+			field.setAccessible(true);
+			field.setInt(item, stacksize);
+			field.setAccessible(false);
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
 	}
