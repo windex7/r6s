@@ -2,12 +2,14 @@ package plugin.R6S;
 
 import java.io.File;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class R6SPlugin extends JavaPlugin implements Listener{
+public class R6SPlugin extends JavaPlugin implements Listener {
 	private static R6SPlugin instance;
-	public R6SPlugin () {
+
+	public R6SPlugin() {
 		instance = this;
 	}
 
@@ -21,7 +23,11 @@ public class R6SPlugin extends JavaPlugin implements Listener{
 
 	@Override
 	public void onEnable() {
+		checkFiles();
+		Bukkit.getPluginManager().registerEvents(new R6SListener(), this);
+	}
 
+	public void checkFiles() {
 		// --check if datafolder and config.yml exist--
 		try {
 			if (!getDataFolder().exists()) {
@@ -31,8 +37,7 @@ public class R6SPlugin extends JavaPlugin implements Listener{
 			if (!new File(getDataFolder(), "config.yml").exists()) {
 				getLogger().info("config.yml is not found, creating...");
 				saveDefaultConfig();
-			}
-			else {
+			} else {
 				getLogger().info("config.yml is found, loading...");
 			}
 			File devfile = new File(getDataFolder(), "devfile.yml");
@@ -43,7 +48,5 @@ public class R6SPlugin extends JavaPlugin implements Listener{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }
