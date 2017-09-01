@@ -39,7 +39,7 @@ public class NBT {
 		return null;
 	}
 
-	public static ItemStack writeItemStringTag(ItemStack item, String key, Object value) {
+	public static ItemStack writeItemTag(ItemStack item, String key, Object value) {
 		if (!(item != null) || item.getType() == Material.AIR) return item;
 		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound nbttag = nmsItem.getTag();
