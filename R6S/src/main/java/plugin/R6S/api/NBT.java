@@ -1,4 +1,4 @@
-package plugin.R6S.API;
+package plugin.R6S.api;
 
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
