@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import plugin.R6S.R6SPlugin;
+import plugin.R6S.api.Base64Item;
 import plugin.R6S.api.NBT;
 
 public class Dev implements CommandExecutor {
@@ -39,12 +40,12 @@ public class Dev implements CommandExecutor {
 						// --specify filepath. args[1]:filename, args[2]:path--
 						File targetfile = new File(r6s.getDataFolder(), args[1] + ".yml");
 						FileConfiguration targetconfig = YamlConfiguration.loadConfiguration(targetfile);
-						targetconfig.set(args[2].toString(), ConvertItemBase64.itemToStringList(invcontents));
+						targetconfig.set(args[2].toString(), Base64Item.itemToStringList(invcontents));
 						targetconfig.save(targetfile);
 						return true;
 					}
 					// --save inv to devfile.yml\inv.arg[1]--
-					devconfig.set("inv." + args[1], ConvertItemBase64.itemToStringList(invcontents));
+					devconfig.set("inv." + args[1], Base64Item.itemToStringList(invcontents));
 					devconfig.save(devfile);
 					return true;
 				} catch (Exception e) {
@@ -56,11 +57,11 @@ public class Dev implements CommandExecutor {
 					if (args.length <= 1) return false;
 					if (args.length >= 3) {
 						// --specify filepath. args[1]:filename, args[2]:path--
-						player.getInventory().setContents(ConvertItemBase64.itemFromStringList(YamlConfiguration.loadConfiguration(new File(mz2.getDataFolder(), args[1] + ".yml")).getString(args[2].toString())));
+						player.getInventory().setContents(Base64Item.itemFromStringList(YamlConfiguration.loadConfiguration(new File(r6s.getDataFolder(), args[1] + ".yml")).getString(args[2].toString())));
 						return true;
 					}
 					// --load inv from devfile.yml\inv.arg[1]--
-					player.getInventory().setContents(ConvertItemBase64.itemFromStringList(devconfig.getString("inv." + args[1])));
+					player.getInventory().setContents(Base64Item.itemFromStringList(devconfig.getString("inv." + args[1])));
 					return true;
 				} catch (Exception e) {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not load from the target file.");
