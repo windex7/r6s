@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="R6S/src/main/java"/>
+	<classpathentry kind="lib" path="R6S/src/main/resources/ProtocolLib.jar"/>
+	<classpathentry kind="lib" path="R6S/src/main/resources/spigot-1.9.4.jar"/>
+	<classpathentry kind="lib" path="R6S/src/main/resources/worldedit-bukkit-6.1.3.jar"/>
+	<classpathentry kind="output" path="R6S/bin"/>
+</classpath>

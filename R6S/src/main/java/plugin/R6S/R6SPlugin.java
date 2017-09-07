@@ -26,12 +26,17 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
+		// check config files
 		checkFiles();
+
+		// register listners
 		Bukkit.getPluginManager().registerEvents(new R6SListener(), this);
+
+		// modify the number of stack size of specified items
+		setStackSize("enderpearl", 1); //example
 	}
 
 	public void checkFiles() {
-		// --check if datafolder and config.yml exist--
 		try {
 			if (!getDataFolder().exists()) {
 				getLogger().info("datafolder is not found, creating...");
