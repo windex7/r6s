@@ -2,6 +2,8 @@ package plugin.R6S;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -33,7 +35,15 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		Bukkit.getPluginManager().registerEvents(new R6SListener(), this);
 
 		// modify the number of stack size of specified items
-		setStackSize("enderpearl", 1); //example
+		Map<String, Integer> stacksize = new HashMap<String, Integer>();
+		stacksize.put("enderpearl", 1);
+		stacksize.put("cobweb", 1);
+		stacksize.put("slimeball", 1);
+		stacksize.put("skull", 1);
+		//stacksize.put("", 1);
+		for(Map.Entry<String, Integer> entry : stacksize.entrySet()) {
+			setStackSize(entry.getKey(), entry.getValue());
+		}
 	}
 
 	public void checkFiles() {
