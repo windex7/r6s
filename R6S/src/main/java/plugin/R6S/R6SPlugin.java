@@ -7,21 +7,20 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.minecraft.server.v1_9_R2.Item;
+import plugin.R6S.command.Dev;
+import plugin.R6S.listener.ChangePlayerAttributes;
+import plugin.R6S.listener.PreventCertainExplosion;
+import plugin.R6S.listener.PreventHangingGlitch;
+import plugin.R6S.listener.ProjectileEpicGlass;
+import plugin.R6S.listener.Rapeling;
+import plugin.R6S.listener.RemoveDamageTick;
+import plugin.R6S.listener.SpecialItems;
 
 public class R6SPlugin extends JavaPlugin implements Listener {
-	private static R6SPlugin instance;
-
-	public R6SPlugin() {
-		instance = this;
-	}
-
-	public static R6SPlugin getInstance() {
-		return instance;
-	}
-
 	@Override
 	public void onDisable() {
 	}
@@ -32,7 +31,17 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		checkFiles();
 
 		// register listners
-		Bukkit.getPluginManager().registerEvents(new R6SListener(), this);
+		PluginManager pm = Bukkit.getPluginManager();
+		pm.registerEvents(new ChangePlayerAttributes(), this);
+		pm.registerEvents(new PreventCertainExplosion(), this);
+		pm.registerEvents(new PreventHangingGlitch(), this);
+		pm.registerEvents(new ProjectileEpicGlass(), this);
+		pm.registerEvents(new Rapeling(), this);
+		pm.registerEvents(new RemoveDamageTick(), this);
+		pm.registerEvents(new SpecialItems(), this);
+
+		// register commands
+		getCommand("dev").setExecutor(new Dev());
 
 		// modify the number of stack size of specified items
 		Map<String, Integer> stacksize = new HashMap<String, Integer>();
@@ -40,10 +49,23 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		stacksize.put("cobweb", 1);
 		stacksize.put("slimeball", 1);
 		stacksize.put("skull", 1);
-		//stacksize.put("", 1);
-		for(Map.Entry<String, Integer> entry : stacksize.entrySet()) {
+		// stacksize.put("", 1);
+		for (Map.Entry<String, Integer> entry : stacksize.entrySet()) {
 			setStackSize(entry.getKey(), entry.getValue());
 		}
+
+		// success message
+		getLogger().info("****Successfully enabled MZ3 plugin!****");
+	}
+
+	private static R6SPlugin instance;
+
+	public R6SPlugin() {
+		instance = this;
+	}
+
+	public static R6SPlugin getInstance() {
+		return instance;
 	}
 
 	public void checkFiles() {
