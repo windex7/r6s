@@ -1,0 +1,40 @@
+name: R6S
+version: 1.9.4
+main: plugin.R6S.R6SPlugin
+commands:
+  recipe:
+    description: open recipes.
+    usage: /recipe
+    default: true
+  login:
+    description: login.
+    usage: /login
+    default: true
+  logout:
+    description: logout.
+    usage: /logout
+    default: true
+  prof:
+    description: view proficiency.
+    usage: /prof
+    default: true
+  stats:
+    description: view stats.
+    usage: /stats
+    default: true
+  tester:
+    description: for test.
+    usage: /tester
+    default: true
+  dev:
+    description: for dev.
+    usage: /dev
+    default: true
+  blockplace:
+    description: blockplace command.
+    usage: /blockplace x1:x2!randx2,y,z1:z2,block:datavalue,startdelay:enddelay,mode,issound:filename,isrelativecoord;x,y,z,...
+    default: true
+  multigive:
+    description: give multiple itemstacks.
+    usage: /multigive player,itemname,number,datavalue,{datatags};player,itemname,...
+    default: true
