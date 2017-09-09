@@ -3,7 +3,6 @@ package plugin.R6S;
 import java.io.File;
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,10 +44,22 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		getCommand("dev").setExecutor(new Dev());
 
 		// modify the number of stack size of specified items
-		setStackSize("enderpearl", 1);
-		setStackSize("cobweb", 1);
-		setStackSize("slimeball", 1);
-		setStackSize("skull", 1);
+		try {
+			Item enderpearl = Item.d("ender_pearl");
+			Item cobweb = Item.d("web");
+			Item slimeball = Item.d("slime_ball");
+			Item skull = Item.d("skull");
+			Field field;
+			field = Item.class.getDeclaredField("maxStackSize");
+			field.setAccessible(true);
+			field.setInt(enderpearl, 1);
+			field.setInt(cobweb, 1);
+			field.setInt(slimeball, 1);
+			field.setInt(skull, 1);
+			field.setAccessible(false);
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+			e.printStackTrace();
+		}
 
 		// success message
 		getLogger().info("****Successfully enabled MZ3 plugin!****");
@@ -82,20 +93,6 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				devfile.createNewFile();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void setStackSize(String itemname, int stacksize) {
-		if (StringUtils.isEmpty(itemname) || stacksize <= 0) return;
-		try {
-			Item item = Item.d(itemname);
-			Field field;
-			field = Item.class.getDeclaredField("maxStackSize");
-			field.setAccessible(true);
-			field.setInt(item, stacksize);
-			field.setAccessible(false);
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
 	}
