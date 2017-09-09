@@ -25,15 +25,16 @@ public class Rapeling implements Listener {
 		Player player = event.getPlayer();
 		GameMode gamemode = player.getGameMode();
 
-		// if (player exists in rapelable region) <- needs WorldGuard configuration
+		// if (player exists in rapelable region) <- needs WorldGuard
+		// configuration
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
 			if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.IN_GROUND
 					|| event.getState() == org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT) {
 				Location location = event.getHook().getLocation();
+				event.setCancelled(true);
 				setPlayerRapeling(player, true);
 				Metadata.setMetaData(player, "rapeling", true);
-			}
-			else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
+			} else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
 				// event.setCancelled(true);
 			}
 		}
@@ -43,14 +44,17 @@ public class Rapeling implements Listener {
 	public void onInteractBlock(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
+		ItemStack offhanditem = player.getInventory().getItemInOffHand();
 		Action action = event.getAction();
 
 		if (item != null) {
 			if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
-				if (item.getType() == Material.FISHING_ROD) {
-					if (Metadata.getMetaData(player, "rapeling").equals(true)) {
-						setPlayerRapeling(player, false);
-						Metadata.setMetaData(player, "rapeling", false);
+				if (item.getType() == Material.FISHING_ROD || offhanditem.getType() == Material.FISHING_ROD) {
+					if (Metadata.getMetaData(player, "rapeling") != null) {
+						if (Metadata.getMetaData(player, "rapeling").equals(true)) {
+							setPlayerRapeling(player, false);
+							Metadata.setMetaData(player, "rapeling", false);
+						}
 					}
 				}
 			}
