@@ -2,14 +2,10 @@ package plugin.R6S.listener;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import plugin.R6S.R6SPlugin;
@@ -31,32 +27,16 @@ public class Rapeling implements Listener {
 			if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.IN_GROUND
 					|| event.getState() == org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT) {
 				Location location = event.getHook().getLocation();
-				event.setCancelled(true);
-				setPlayerRapeling(player, true);
-				Metadata.setMetaData(player, "rapeling", true);
-			} else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
-				// event.setCancelled(true);
-			}
-		}
-	}
-
-	@EventHandler
-	public void onInteractBlock(PlayerInteractEvent event) {
-		Player player = event.getPlayer();
-		ItemStack item = event.getItem();
-		ItemStack offhanditem = player.getInventory().getItemInOffHand();
-		Action action = event.getAction();
-
-		if (item != null) {
-			if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
-				if (item.getType() == Material.FISHING_ROD || offhanditem.getType() == Material.FISHING_ROD) {
-					if (Metadata.getMetaData(player, "rapeling") != null) {
-						if (Metadata.getMetaData(player, "rapeling").equals(true)) {
-							setPlayerRapeling(player, false);
-							Metadata.setMetaData(player, "rapeling", false);
-						}
-					}
+				if (Metadata.getMetaData(player, "rapeling").equals(false)) {
+					event.setCancelled(true);
+					setPlayerRapeling(player, true);
+				} else {
+					setPlayerRapeling(player, false);
 				}
+			} else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
+				event.setCancelled(true);
+				event.getHook().remove();
+				setPlayerRapeling(player, false);
 			}
 		}
 	}
@@ -68,10 +48,12 @@ public class Rapeling implements Listener {
 				player.setAllowFlight(true);
 				player.setFlying(true);
 				player.setFlySpeed(flyspeed);
+				Metadata.setMetaData(player, "rapeling", true);
 			} else {
 				player.setAllowFlight(false);
 				player.setFlying(false);
 				player.setFlySpeed(defaultflyspeed);
+				Metadata.setMetaData(player, "rapeling", false);
 			}
 		}
 	}

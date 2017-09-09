@@ -2,8 +2,6 @@ package plugin.R6S;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -47,15 +45,10 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		getCommand("dev").setExecutor(new Dev());
 
 		// modify the number of stack size of specified items
-		Map<String, Integer> stacksize = new HashMap<String, Integer>();
-		stacksize.put("enderpearl", 1);
-		stacksize.put("cobweb", 1);
-		stacksize.put("slimeball", 1);
-		stacksize.put("skull", 1);
-		// stacksize.put("", 1);
-		for (Map.Entry<String, Integer> entry : stacksize.entrySet()) {
-			setStackSize(entry.getKey().toString(), (int)entry.getValue());
-		}
+		setStackSize("enderpearl", 1);
+		setStackSize("cobweb", 1);
+		setStackSize("slimeball", 1);
+		setStackSize("skull", 1);
 
 		// success message
 		getLogger().info("****Successfully enabled MZ3 plugin!****");
