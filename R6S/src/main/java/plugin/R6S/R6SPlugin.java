@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -93,6 +94,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 	}
 
 	public void setStackSize(String itemname, int stacksize) {
+		if (StringUtils.isEmpty(itemname) || stacksize <= 0) return;
 		try {
 			Item item = Item.d(itemname);
 			Field field;
