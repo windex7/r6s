@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.minecraft.server.v1_9_R2.Item;
@@ -17,6 +16,7 @@ import plugin.R6S.listener.PreventCertainExplosion;
 import plugin.R6S.listener.PreventHangingGlitch;
 import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
+import plugin.R6S.listener.ReleasePlayerData;
 import plugin.R6S.listener.RemoveDamageTick;
 import plugin.R6S.listener.SpecialItems;
 
@@ -31,14 +31,16 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		checkFiles();
 
 		// register listners
-		PluginManager pm = Bukkit.getPluginManager();
-		pm.registerEvents(new ChangePlayerAttributes(), this);
-		pm.registerEvents(new PreventCertainExplosion(), this);
-		pm.registerEvents(new PreventHangingGlitch(), this);
-		pm.registerEvents(new ProjectileEpicGlass(), this);
-		pm.registerEvents(new Rapeling(), this);
-		pm.registerEvents(new RemoveDamageTick(), this);
-		pm.registerEvents(new SpecialItems(), this);
+		registerEvents(
+				new ChangePlayerAttributes(),
+				new PreventCertainExplosion(),
+				new PreventHangingGlitch(),
+				new ProjectileEpicGlass(),
+				new Rapeling(),
+				new ReleasePlayerData(),
+				new RemoveDamageTick(),
+				new SpecialItems()
+				);
 
 		// register commands
 		getCommand("dev").setExecutor(new Dev());
@@ -100,6 +102,12 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 			field.setAccessible(false);
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void registerEvents(Listener... listeners) {
+		for (Listener listener : listeners) {
+			Bukkit.getPluginManager().registerEvents(listener, this);
 		}
 	}
 }
