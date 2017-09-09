@@ -13,7 +13,7 @@ import plugin.R6S.api.Metadata;
 
 public class Rapeling implements Listener {
 	static Plugin r6s = R6SPlugin.getInstance();
-	static float flyspeed = 0.02f;
+	static float flyspeed = 0.05f;
 	static float defaultflyspeed = 0.2f;
 
 	@EventHandler
@@ -24,8 +24,7 @@ public class Rapeling implements Listener {
 		// if (player exists in rapelable region) <- needs WorldGuard
 		// configuration
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
-			if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.IN_GROUND
-					|| event.getState() == org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT) {
+			if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.IN_GROUND) {
 				Location location = event.getHook().getLocation();
 				if (Metadata.getMetaData(player, "rapeling").equals(false)) {
 					event.setCancelled(true);
@@ -33,7 +32,11 @@ public class Rapeling implements Listener {
 				} else {
 					setPlayerRapeling(player, false);
 				}
-			} else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
+			} else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT) {
+				player.sendMessage("the hook must be in ground!");
+				setPlayerRapeling(player, false);
+			}
+			else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
 				event.setCancelled(true);
 				event.getHook().remove();
 				setPlayerRapeling(player, false);
