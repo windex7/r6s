@@ -54,7 +54,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		stacksize.put("skull", 1);
 		// stacksize.put("", 1);
 		for (Map.Entry<String, Integer> entry : stacksize.entrySet()) {
-			setStackSize(entry.getKey(), entry.getValue());
+			setStackSize(entry.getKey().toString(), (int)entry.getValue());
 		}
 
 		// success message

@@ -17,6 +17,7 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -32,6 +33,7 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -50,6 +52,37 @@ public class SpecialItems implements Listener {
 	public static List<Integer> fraggrenades = new ArrayList<>();
 	public static HashMap<String, Integer> fragdelay = new HashMap<>();
 	public static HashMap<String, Location> c4location = new HashMap<>();
+
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public static void onBlockPlace(BlockPlaceEvent event) {
+		Player player = event.getPlayer();
+		Block block = event.getBlock();
+		if (block.getType() == Material.SKULL) {
+			Skull skull = (Skull)block.getState();
+			String owner = skull.getOwner();
+			if (!(owner != null)) return;
+			if (owner.equalsIgnoreCase("MHF_TNT2")) {
+				ItemStack detonator = new ItemStack(Material.LEVER, 1);
+				ItemMeta detonatormeta = detonator.getItemMeta();
+				detonatormeta.setDisplayName("Detonator");
+				detonatormeta.setLore(Arrays.asList(String.valueOf(new SimpleDateFormat("ddHHmmssSSS").format(Calendar.getInstance().getTime()))));
+				detonator.setItemMeta(detonatormeta);
+				SpecialItems.c4location.put(detonatormeta.getLore().toString(), block.getLocation());
+				if (player.getInventory().getItemInMainHand() != null) {
+					if (player.getInventory().getItemInOffHand() != null) {
+						player.getInventory().addItem(detonator);
+					}
+					else {
+						player.getInventory().setItemInOffHand(detonator);
+					}
+				} else {
+					player.getInventory().setItemInMainHand(detonator);
+				}
+				return;
+			}
+		}
+	}
 
 	@EventHandler
 	public void onInteractBlock(PlayerInteractEvent event) {
