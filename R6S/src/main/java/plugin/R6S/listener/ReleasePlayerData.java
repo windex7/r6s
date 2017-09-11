@@ -13,7 +13,7 @@ public class ReleasePlayerData implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		Metadata.setMetaData(player, "rapeling", false);
+		Metadata.setMetadata(player, "rapeling", false);
 	}
 
 	@EventHandler
@@ -31,5 +31,7 @@ public class ReleasePlayerData implements Listener {
 	public static void releasePlayerData(Player player) {
 		// cancel rapeling
 		Rapeling.setPlayerRapeling(player, false);
+		String[] keylist = { "rapeling", "r6steam" };
+		Metadata.clearMetadata(player, keylist);
 	}
 }

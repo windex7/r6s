@@ -36,7 +36,7 @@ public class Rapeling implements Listener {
 					return;
 				}
 
-				if (Metadata.getMetaData(player, "rapeling").equals(false)) {
+				if (Metadata.getMetadata(player, "rapeling").equals(false)) {
 					event.setCancelled(true);
 					setPlayerRapeling(player, true);
 					checkPlayerFish(player, event.getHook().getLocation(), event.getHook().getEntityId());
@@ -62,12 +62,12 @@ public class Rapeling implements Listener {
 				player.setAllowFlight(true);
 				player.setFlying(true);
 				player.setFlySpeed(flyspeed);
-				Metadata.setMetaData(player, "rapeling", true);
+				Metadata.setMetadata(player, "rapeling", true);
 			} else {
 				player.setAllowFlight(false);
 				player.setFlying(false);
 				player.setFlySpeed(defaultflyspeed);
-				Metadata.setMetaData(player, "rapeling", false);
+				Metadata.setMetadata(player, "rapeling", false);
 			}
 		}
 	}

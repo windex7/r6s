@@ -16,6 +16,7 @@ import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
 import plugin.R6S.listener.ReleasePlayerData;
 import plugin.R6S.listener.RemoveDamageTick;
+import plugin.R6S.listener.SecurityCamera;
 import plugin.R6S.listener.SpecialItems;
 
 public class R6SPlugin extends JavaPlugin implements Listener {
@@ -37,7 +38,8 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				new Rapeling(),
 				new ReleasePlayerData(),
 				new RemoveDamageTick(),
-				new SpecialItems()
+				new SpecialItems(),
+				new SecurityCamera()
 				);
 
 		// register commands
