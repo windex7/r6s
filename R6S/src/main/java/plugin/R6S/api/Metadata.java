@@ -26,10 +26,10 @@ public class Metadata {
 		if (!(entity != null) || StringUtils.isEmpty(key)) {
 			return null;
 		} else if (entity.hasMetadata(key)) {
+			for (MetadataValue metadata : entity.getMetadata(key)) {
+				return metadata.value();
+			}
 			return null;
-		}
-		for (MetadataValue metadata : entity.getMetadata(key)) {
-			return metadata.value();
 		}
 		return null;
 	}

@@ -142,6 +142,7 @@ public class SpecialItems implements Listener {
 									new SimpleDateFormat("ddHHmmssSSS").format(Calendar.getInstance().getTime()))));
 							item.setItemMeta(itemmeta);
 							item.addUnsafeEnchantment(Enchantment.LUCK, 4);
+							NBT.writeItemTag(item, "unavailable", "true");
 							player.updateInventory();
 							for (int i = 0; i < fragfuse; i++) {
 								final int l = i;

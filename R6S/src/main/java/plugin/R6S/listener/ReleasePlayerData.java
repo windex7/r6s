@@ -31,7 +31,7 @@ public class ReleasePlayerData implements Listener {
 	public static void releasePlayerData(Player player) {
 		// cancel rapeling
 		Rapeling.setPlayerRapeling(player, false);
-		String[] keylist = { "rapeling", "r6steam" };
+		String[] keylist = { "r6steam" };
 		Metadata.clearMetadata(player, keylist);
 	}
 }
