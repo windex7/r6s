@@ -59,26 +59,32 @@ public class SpecialItems implements Listener {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		if (block.getType() == Material.SKULL) {
-			Skull skull = (Skull)block.getState();
+			Skull skull = (Skull) block.getState();
 			String owner = skull.getOwner();
-			if (!(owner != null)) return;
+			if (!(owner != null))
+				return;
 			if (owner.equalsIgnoreCase("MHF_TNT2")) {
 				ItemStack detonator = new ItemStack(Material.LEVER, 1);
 				ItemMeta detonatormeta = detonator.getItemMeta();
 				detonatormeta.setDisplayName("Detonator");
-				detonatormeta.setLore(Arrays.asList(String.valueOf(new SimpleDateFormat("ddHHmmssSSS").format(Calendar.getInstance().getTime()))));
+				detonatormeta.setLore(Arrays.asList(
+						String.valueOf(new SimpleDateFormat("ddHHmmssSSS").format(Calendar.getInstance().getTime()))));
 				detonator.setItemMeta(detonatormeta);
 				SpecialItems.c4location.put(detonatormeta.getLore().toString(), block.getLocation());
-				if (player.getInventory().getItemInMainHand() != null) {
-					if (player.getInventory().getItemInOffHand() != null) {
-						player.getInventory().addItem(detonator);
+				Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+					@Override
+					public void run() {
+						if (player.getInventory().getItemInMainHand() != null) {
+							if (player.getInventory().getItemInOffHand() != null) {
+								player.getInventory().addItem(detonator);
+							} else {
+								player.getInventory().setItemInOffHand(detonator);
+							}
+						} else {
+							player.getInventory().setItemInMainHand(detonator);
+						}
 					}
-					else {
-						player.getInventory().setItemInOffHand(detonator);
-					}
-				} else {
-					player.getInventory().setItemInMainHand(detonator);
-				}
+				}, 2);
 				return;
 			}
 		}

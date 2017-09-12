@@ -80,6 +80,15 @@ public class Rapeling implements Listener {
 			for (Entity hook : location.getWorld().getNearbyEntities(location, accuracy, accuracy, accuracy)) {
 				// if (hook.getType() == EntityType.FISHING_HOOK) {
 				if (hook.getEntityId() == entityid) {
+					if (player.getLocation().getY() + 1 <= location.getY()) {
+						if (player.isFlying()) {
+							player.setAllowFlight(false);
+							player.setFlying(false);
+						}
+					} else if (player.getAllowFlight() == false) {
+						player.setAllowFlight(true);
+						player.setFlying(true);
+					}
 					Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 						@Override
 						public void run() {
