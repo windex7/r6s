@@ -40,7 +40,8 @@ public class Rapeling implements Listener {
 					setPlayerRapeling(player, false);
 					return;
 				}
-				if (Metadata.getMetadata(player, "rapeling").equals(false) || !(Metadata.getMetadata(player, "rapeling") != null)) {
+				if (Metadata.getMetadata(player, "rapeling").equals(false)
+						|| !(Metadata.getMetadata(player, "rapeling") != null)) {
 					event.setCancelled(true);
 					setPlayerRapeling(player, true);
 					checkPlayerFish(player, event.getHook().getLocation(), event.getHook().getEntityId());
@@ -72,8 +73,10 @@ public class Rapeling implements Listener {
 				Metadata.setMetadata(player, "rapeling", true);
 			} else {
 				for (ItemStack item : player.getInventory()) {
-					if (item.getType() == Material.FISHING_ROD) {
-						item.removeEnchantment(Enchantment.DURABILITY);
+					if (item != null) {
+						if (item.getType() == Material.FISHING_ROD) {
+							item.removeEnchantment(Enchantment.DURABILITY);
+						}
 					}
 				}
 				player.setAllowFlight(false);
@@ -125,7 +128,8 @@ public class Rapeling implements Listener {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
 		if (item != null) {
-			if (item.getType() == Material.FISHING_ROD && player.isFlying() && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+			if (item.getType() == Material.FISHING_ROD && player.isFlying()
+					&& (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
 				player.setVelocity(new Vector(player.getVelocity().getX(), 0.4, player.getVelocity().getZ()));
 			}
 		}
