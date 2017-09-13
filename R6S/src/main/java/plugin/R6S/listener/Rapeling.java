@@ -65,6 +65,7 @@ public class Rapeling implements Listener {
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
 			if (state) {
 				ItemStack fishingrod = new ItemStack(player.getInventory().getItemInMainHand());
+				fishingrod.getItemMeta().setDisplayName("[RAPELING]");
 				fishingrod.addEnchantment(Enchantment.DURABILITY, 1);
 				player.getInventory().setItemInMainHand(fishingrod);
 				player.setAllowFlight(true);
@@ -75,7 +76,8 @@ public class Rapeling implements Listener {
 				for (ItemStack item : player.getInventory()) {
 					if (item != null) {
 						if (item.getType() == Material.FISHING_ROD) {
-							item.removeEnchantment(Enchantment.DURABILITY);
+							item.getItemMeta().setDisplayName("Grapple");
+							if (item.containsEnchantment(Enchantment.DURABILITY)) item.removeEnchantment(Enchantment.DURABILITY);
 						}
 					}
 				}
