@@ -5,9 +5,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Glowing {
-	public static void setPlayerGlowing(Player player) {
+	public static void setPlayerGlowing(Player player, int interval) {
 		if (player != null) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 1));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, interval, 1));
 		}
 	}
 }

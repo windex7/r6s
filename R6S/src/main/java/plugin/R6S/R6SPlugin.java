@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.minecraft.server.v1_9_R2.Item;
 import plugin.R6S.command.Dev;
+import plugin.R6S.command.R6S;
 import plugin.R6S.listener.ChangePlayerAttributes;
 import plugin.R6S.listener.PreventCertainExplosion;
 import plugin.R6S.listener.PreventHangingGlitch;
@@ -17,7 +18,6 @@ import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
 import plugin.R6S.listener.ReleasePlayerData;
 import plugin.R6S.listener.RemoveDamageTick;
-import plugin.R6S.listener.SecurityCamera;
 import plugin.R6S.listener.SpecialItems;
 
 public class R6SPlugin extends JavaPlugin implements Listener {
@@ -40,12 +40,12 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				new Rapeling(),
 				new ReleasePlayerData(),
 				new RemoveDamageTick(),
-				new SpecialItems(),
-				new SecurityCamera()
+				new SpecialItems()
 				);
 
 		// register commands
 		getCommand("dev").setExecutor(new Dev());
+		getCommand("r6s").setExecutor(new R6S());
 
 		// modify the number of stack size of specified items
 		try {

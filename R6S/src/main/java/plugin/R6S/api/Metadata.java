@@ -1,5 +1,7 @@
 package plugin.R6S.api;
 
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -12,7 +14,7 @@ public class Metadata {
 	static Plugin r6s = R6SPlugin.getInstance();
 
 	public static void setMetadata(Entity entity, String key, Object value) {
-		if (!(entity != null) || StringUtils.isEmpty(key) || value.equals(null))
+		if (!(entity != null) || StringUtils.isEmpty(key) || Objects.equals(value, null))
 			return;
 		MetadataValue metadata = new FixedMetadataValue(r6s, value);
 		if (entity.hasMetadata(key)) {
