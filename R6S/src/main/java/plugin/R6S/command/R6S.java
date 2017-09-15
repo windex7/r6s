@@ -31,7 +31,7 @@ public class R6S implements CommandExecutor{
 			if (args.length == 0) return false;
 			switch (args[0]) {
 			case "camera":
-				if (args.length <= 3) return false;
+				if (args.length <= 2) return false;
 				for (Entity entity : commandblock.getBlock().getWorld().getNearbyEntities(location, 4, 4, 4)) {
 					if (entity instanceof Player) {
 						if (Metadata.getMetadata(entity, "stonebutton") != null) {
@@ -70,7 +70,7 @@ public class R6S implements CommandExecutor{
 
 	public static void checkTargetInCamera(Player player, int y1, int y2, int duration) {
 		if (duration <= 0) return;
-		int interval = 4; // duration(200) must be devided by interval(4)
+		int interval = 10; // duration(200) must be devided by interval(10)
 		double y = player.getLocation().getY();
 		if ((y1 >= y && y >= y2) || (y1 <= y && y <= y2)) {
 			Glowing.setPlayerGlowing(player, interval);

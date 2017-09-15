@@ -19,6 +19,7 @@ public class ReleasePlayerData implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
+		Rapeling.setPlayerRapeling(player, false);
 		releasePlayerData(player);
 	}
 

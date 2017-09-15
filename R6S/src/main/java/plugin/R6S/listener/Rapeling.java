@@ -13,6 +13,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
@@ -43,7 +44,7 @@ public class Rapeling implements Listener {
 				if (Metadata.getMetadata(player, "rapeling").equals(false)
 						|| !(Metadata.getMetadata(player, "rapeling") != null)) {
 					event.setCancelled(true);
-					setPlayerRapeling(player, true);
+					setPlayerRapeling(player, "decelerate");
 					checkPlayerFish(player, event.getHook().getLocation(), event.getHook().getEntityId());
 					return;
 				} else {
@@ -65,7 +66,9 @@ public class Rapeling implements Listener {
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
 			if (state) {
 				ItemStack fishingrod = new ItemStack(player.getInventory().getItemInMainHand());
-				fishingrod.getItemMeta().setDisplayName("[RAPELING]");
+				ItemMeta meta = fishingrod.getItemMeta();
+				meta.setDisplayName("[RAPELING]");
+				fishingrod.setItemMeta(meta);
 				fishingrod.addEnchantment(Enchantment.DURABILITY, 1);
 				player.getInventory().setItemInMainHand(fishingrod);
 				player.setAllowFlight(true);
@@ -76,7 +79,9 @@ public class Rapeling implements Listener {
 				for (ItemStack item : player.getInventory()) {
 					if (item != null) {
 						if (item.getType() == Material.FISHING_ROD) {
-							item.getItemMeta().setDisplayName("Grapple");
+							ItemMeta meta = item.getItemMeta();
+							meta.setDisplayName("Grapple");
+							item.setItemMeta(meta);
 							if (item.containsEnchantment(Enchantment.DURABILITY)) item.removeEnchantment(Enchantment.DURABILITY);
 						}
 					}
@@ -89,10 +94,48 @@ public class Rapeling implements Listener {
 		}
 	}
 
-	public static void checkPlayerFish(Player player, Location location, int entityid) {
-		int checkdelay = 3;
-		int accuracy = 1;
+	public static void setPlayerRapeling(Player player, String state) {
+		int interval = 2;
+		double deceleration = 0.02;
+		double minvel = -0.1;
+		GameMode gamemode = player.getGameMode();
+		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
+			switch (state) {
+			case "decelerate":
+				player.setAllowFlight(false);
+				player.setFlying(false);
+				player.setFlySpeed(defaultflyspeed);
+				Metadata.setMetadata(player, "rapeling", false);
+				if (player.getVelocity().getY() >= minvel) {
+					setPlayerRapeling(player, true);
+				} else {
+					for (ItemStack item : player.getInventory()) {
+					if (item != null) {
+						if (item.getType() == Material.FISHING_ROD) {
+							ItemMeta meta = item.getItemMeta();
+							meta.setDisplayName("[DECELERATING]");
+							item.setItemMeta(meta);
+							if (item.containsEnchantment(Enchantment.DURABILITY)) item.removeEnchantment(Enchantment.DURABILITY);
+						}
+					}
+				}
+				player.setVelocity(new Vector(player.getVelocity().getX(), player.getVelocity().getY() + deceleration, player.getVelocity().getZ()));
+				Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+					@Override
+					public void run() {
+						setPlayerRapeling(player, "decelerate");
+					}
+				}, interval);
+				return;
+				}
+			}
+		}
+	}
 
+	public static void checkPlayerFish(Player player, Location location, int entityid) {
+		checkPlayerDistance(player, location);
+		int checkdelay = 2;
+		int accuracy = 1;
 		if (location != null) {
 			for (Entity hook : location.getWorld().getNearbyEntities(location, accuracy, accuracy, accuracy)) {
 				if (hook.getEntityId() == entityid) {
@@ -105,8 +148,7 @@ public class Rapeling implements Listener {
 							player.setFlying(false);
 						}
 					} else if (player.getAllowFlight() == false) {
-						player.setAllowFlight(true);
-						player.setFlying(true);
+						setPlayerRapeling(player, "decelerate");
 					}
 					Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 						@Override
@@ -122,6 +164,24 @@ public class Rapeling implements Listener {
 		} else {
 			setPlayerRapeling(player, false);
 			return;
+		}
+	}
+
+	public static void checkPlayerDistance(Player player, Location location) {
+		if (location != null) {
+			if (player.isFlying()) {
+				int guaranteedhdistance = 5; // allowed horizontal distance
+				double hvrate = 0.5;
+				Vector extent = player.getLocation().toVector().subtract(location.toVector());
+				double hdistance = new Vector(extent.getX(), 0, extent.getZ()).length();
+				double vdistance = extent.getY() * -1;
+				if (hdistance > guaranteedhdistance && hdistance >= vdistance * hvrate) {
+					Vector playervelocity = player.getVelocity();
+					double force = hdistance - vdistance * hvrate;
+					double forcerate = 0.01;
+					player.setVelocity(new Vector(extent.getX() * -1 * force * forcerate, playervelocity.getY(), extent.getZ() * -1 * force * forcerate));
+				}
+			}
 		}
 	}
 

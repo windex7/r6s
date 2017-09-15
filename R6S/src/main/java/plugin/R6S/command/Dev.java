@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin;
 
 import plugin.R6S.R6SPlugin;
 import plugin.R6S.api.Base64Item;
+import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
 
 public class Dev implements CommandExecutor {
@@ -80,6 +81,17 @@ public class Dev implements CommandExecutor {
 				if (args.length <= 2) return false;
 				player.getInventory().setItemInMainHand(NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], Integer.parseInt(args[2])));
 				player.sendMessage("successfully wrote nbt to the item in your main hand! key: " + args[1] + " , value: " + args[2]);
+				return true;
+			case "writemetadata":
+				if (args.length <= 3) return false;
+				Player writetarget = r6s.getServer().getPlayer(args[1]);
+				Metadata.setMetadata(writetarget, args[2], args[3]);
+				return true;
+			case "readmetadata":
+				if (args.length <= 2) return false;
+				Player readtarget = r6s.getServer().getPlayer(args[1]);
+				String value = Metadata.getMetadata(readtarget, args[2]).toString();
+				player.sendMessage("key: " + args[2] + ", value: " + value);
 				return true;
 			default:
 				return false;

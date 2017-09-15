@@ -38,3 +38,7 @@ commands:
     description: give multiple itemstacks.
     usage: /multigive player,itemname,number,datavalue,{datatags};player,itemname,...
     default: true
+  r6s:
+    description: r6s commands.
+    usage: /r6s camera y1 y2
+    default: true
