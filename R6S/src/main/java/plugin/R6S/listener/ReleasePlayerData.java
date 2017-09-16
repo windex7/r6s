@@ -1,5 +1,7 @@
 package plugin.R6S.listener;
 
+import java.util.Calendar;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,13 +15,12 @@ public class ReleasePlayerData implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		Metadata.setMetadata(player, "rapeling", false);
+		releasePlayerData(player);
 	}
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
-		Rapeling.setPlayerRapeling(player, false);
 		releasePlayerData(player);
 	}
 
@@ -32,7 +33,11 @@ public class ReleasePlayerData implements Listener {
 	public static void releasePlayerData(Player player) {
 		// cancel rapeling
 		Rapeling.setPlayerRapeling(player, false);
-		String[] keylist = { "r6steam" };
-		Metadata.clearMetadata(player, keylist);
+		// String[] keylist = { "team" };
+		// Metadata.clearMetadata(player, keylist);
+		Metadata.setMetadata(player, "rapeling", false);
+		Metadata.setMetadata(player, "snapped", true);
+		Metadata.setMetadata(player, "rapelingtimer", Calendar.getInstance().getTimeInMillis());
+		Metadata.setMetadata(player, "cancelrapeling", false);
 	}
 }

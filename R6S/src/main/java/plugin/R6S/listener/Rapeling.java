@@ -1,5 +1,7 @@
 package plugin.R6S.listener;
 
+import java.util.Calendar;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -16,6 +18,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+
+import com.google.common.base.Objects;
 
 import plugin.R6S.R6SPlugin;
 import plugin.R6S.api.Metadata;
@@ -43,10 +47,20 @@ public class Rapeling implements Listener {
 				}
 				if (Metadata.getMetadata(player, "rapeling").equals(false)
 						|| !(Metadata.getMetadata(player, "rapeling") != null)) {
+					if (Metadata.getMetadata(player, "cancelrapeling") != null) {
+						if (Metadata.getMetadata(player, "cancelrapeling").equals(true)) {
+							Metadata.setMetadata(player, "cancelrapeling", false);
+							setPlayerRapeling(player, false);
+						}
+					}
 					event.setCancelled(true);
+					Metadata.setMetadata(player, "snapped", false);
 					setPlayerRapeling(player, "decelerate");
 					checkPlayerFish(player, event.getHook().getLocation(), event.getHook().getEntityId());
 					return;
+				//} else if (Metadata.getMetadata(player, "rapeling").equals(true) && Metadata.getMetadata(player, "toggledfly").equals(true)) {
+				//	event.setCancelled(true);
+				//	setPlayerRapeling(player, "decelerate");
 				} else {
 					setPlayerRapeling(player, false);
 					return;
@@ -55,6 +69,7 @@ public class Rapeling implements Listener {
 			} else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
 				event.setCancelled(true);
 				event.getHook().remove();
+				Metadata.setMetadata(player, "snapped", true);
 				setPlayerRapeling(player, false);
 				return;
 			}
@@ -75,7 +90,9 @@ public class Rapeling implements Listener {
 				player.setFlying(true);
 				player.setFlySpeed(flyspeed);
 				Metadata.setMetadata(player, "rapeling", true);
-			} else {
+				Metadata.setMetadata(player, "decelerating", false);
+			} //else
+			if (state == false || isPlayerGrappleSnapped(player)) { // as deceleration is glitched
 				for (ItemStack item : player.getInventory()) {
 					if (item != null) {
 						if (item.getType() == Material.FISHING_ROD) {
@@ -90,11 +107,18 @@ public class Rapeling implements Listener {
 				player.setFlying(false);
 				player.setFlySpeed(defaultflyspeed);
 				Metadata.setMetadata(player, "rapeling", false);
+				Metadata.setMetadata(player, "decelerating", false);
+				Metadata.setMetadata(player, "rapelingtimer", Calendar.getInstance().getTimeInMillis());
 			}
 		}
 	}
 
 	public static void setPlayerRapeling(Player player, String state) {
+		// if (StringUtils.equals(state, "true") || StringUtils.equals(state, "false")) return;
+		if (isPlayerGrappleSnapped(player)) {
+			setPlayerRapeling(player, false);
+			return;
+		}
 		int interval = 2;
 		double deceleration = 0.02;
 		double minvel = -0.1;
@@ -102,13 +126,19 @@ public class Rapeling implements Listener {
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
 			switch (state) {
 			case "decelerate":
-				player.setAllowFlight(false);
-				player.setFlying(false);
-				player.setFlySpeed(defaultflyspeed);
-				Metadata.setMetadata(player, "rapeling", false);
+				if (Metadata.getMetadata(player, "rapelingtimer") != null) {
+					if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "cancelrapeling") <= 1000) {
+						return;
+					}
+				}
 				if (player.getVelocity().getY() >= minvel) {
 					setPlayerRapeling(player, true);
 				} else {
+					player.setAllowFlight(false);
+					player.setFlying(false);
+					player.setFlySpeed(defaultflyspeed);
+					Metadata.setMetadata(player, "rapeling", false);
+					Metadata.setMetadata(player, "decelerating", true);
 					for (ItemStack item : player.getInventory()) {
 					if (item != null) {
 						if (item.getType() == Material.FISHING_ROD) {
@@ -134,15 +164,17 @@ public class Rapeling implements Listener {
 
 	public static void checkPlayerFish(Player player, Location location, int entityid) {
 		checkPlayerDistance(player, location);
+		checkPlayerFlying(player, location, entityid);
 		int checkdelay = 2;
 		int accuracy = 1;
+		double allowedstep = 2;
 		if (location != null) {
 			for (Entity hook : location.getWorld().getNearbyEntities(location, accuracy, accuracy, accuracy)) {
 				if (hook.getEntityId() == entityid) {
 					if (player.isSneaking() && player.isFlying()) {
 						player.setVelocity(new Vector(player.getVelocity().getX(), -0.4, player.getVelocity().getZ()));
 					}
-					if (player.getLocation().getY() - 0.5 >= location.getY()) {
+					if (player.getLocation().getY() - allowedstep >= location.getY()) {
 						if (player.isFlying()) {
 							player.setAllowFlight(false);
 							player.setFlying(false);
@@ -160,10 +192,20 @@ public class Rapeling implements Listener {
 				}
 			}
 			setPlayerRapeling(player, false);
+			Metadata.setMetadata(player, "snapped", true);
 			return;
 		} else {
 			setPlayerRapeling(player, false);
+			Metadata.setMetadata(player, "snapped", true);
 			return;
+		}
+	}
+
+	public static boolean isPlayerGrappleSnapped(Player player) {
+		if (Objects.equal(Metadata.getMetadata(player, "snapped"), false)) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -178,8 +220,26 @@ public class Rapeling implements Listener {
 				if (hdistance > guaranteedhdistance && hdistance >= vdistance * hvrate) {
 					Vector playervelocity = player.getVelocity();
 					double force = hdistance - vdistance * hvrate;
-					double forcerate = 0.01;
+					double forcerate = 0.005;
 					player.setVelocity(new Vector(extent.getX() * -1 * force * forcerate, playervelocity.getY(), extent.getZ() * -1 * force * forcerate));
+				}
+			}
+		}
+	}
+
+	public static void checkPlayerFlying(Player player, Location location, int entityid) {
+		if (player.isFlying() == false && player.getAllowFlight()) {
+			if (Metadata.getMetadata(player, "rapeling").equals(true)) {
+				if (Metadata.getMetadata(player, "decelerating").equals(true)) return;
+				if (player.getLocation().getY() >= location.getY() + 3 || player.getLocation().getY() <= location.getY() - 3) {
+					//int accuracy = 1;
+					//for (Entity hook : location.getWorld().getNearbyEntities(location, accuracy, accuracy, accuracy)) {
+					//	if (hook.getEntityId() == entityid) {
+					//		 hook.remove();
+					//	}
+					setPlayerRapeling(player, false);
+					Metadata.setMetadata(player, "cancelrapeling", true);
+					//}
 				}
 			}
 		}

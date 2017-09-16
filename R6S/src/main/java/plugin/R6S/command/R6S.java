@@ -70,10 +70,10 @@ public class R6S implements CommandExecutor{
 
 	public static void checkTargetInCamera(Player player, int y1, int y2, int duration) {
 		if (duration <= 0) return;
-		int interval = 10; // duration(200) must be devided by interval(10)
+		int interval = 10; // duration(200) must be able to be devided by interval(10)
 		double y = player.getLocation().getY();
 		if ((y1 >= y && y >= y2) || (y1 <= y && y <= y2)) {
-			Glowing.setPlayerGlowing(player, interval);
+			Glowing.setPlayerGlowing(player, interval * 2);
 		}
 		int remainlength = duration - interval;
 		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {

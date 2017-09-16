@@ -68,7 +68,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		}
 
 		// success message
-		getLogger().info("****Successfully enabled MZ3 plugin!****");
+		getLogger().info("****Successfully enabled R6S plugin!****");
 	}
 
 	private static R6SPlugin instance;
