@@ -38,6 +38,6 @@ public class ReleasePlayerData implements Listener {
 		Metadata.setMetadata(player, "rapeling", false);
 		Metadata.setMetadata(player, "snapped", true);
 		Metadata.setMetadata(player, "rapelingtimer", Calendar.getInstance().getTimeInMillis());
-		Metadata.setMetadata(player, "cancelrapeling", false);
+		Metadata.setMetadata(player, "cancelrapeling", 0L);
 	}
 }

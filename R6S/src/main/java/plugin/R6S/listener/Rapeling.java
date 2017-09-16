@@ -33,6 +33,7 @@ public class Rapeling implements Listener {
 	public void onPlayerGrapple(PlayerFishEvent event) {
 		Player player = event.getPlayer();
 		GameMode gamemode = player.getGameMode();
+		long canceltimer = 5000; // ms
 
 		// if (player exists in rapelable region) <- needs WorldGuard
 		// configuration
@@ -48,9 +49,12 @@ public class Rapeling implements Listener {
 				if (Metadata.getMetadata(player, "rapeling").equals(false)
 						|| !(Metadata.getMetadata(player, "rapeling") != null)) {
 					if (Metadata.getMetadata(player, "cancelrapeling") != null) {
-						if (Metadata.getMetadata(player, "cancelrapeling").equals(true)) {
-							Metadata.setMetadata(player, "cancelrapeling", false);
+						if ((long)Metadata.getMetadata(player, "cancelrapeling") >= 1919L && Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "cancelrapeling") >= canceltimer) {
+							Metadata.setMetadata(player, "cancelrapeling", 0L);
 							setPlayerRapeling(player, false);
+							return;
+						} else if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "cancelrapeling") <= canceltimer){
+							Metadata.setMetadata(player, "cancelrapeling", 0L);
 						}
 					}
 					event.setCancelled(true);
@@ -122,12 +126,13 @@ public class Rapeling implements Listener {
 		int interval = 2;
 		double deceleration = 0.02;
 		double minvel = -0.1;
+		long rapelingtimer = 1000; // ms
 		GameMode gamemode = player.getGameMode();
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
 			switch (state) {
 			case "decelerate":
 				if (Metadata.getMetadata(player, "rapelingtimer") != null) {
-					if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "cancelrapeling") <= 1000) {
+					if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "rapelingtimer") <= rapelingtimer) {
 						return;
 					}
 				}
@@ -163,11 +168,15 @@ public class Rapeling implements Listener {
 	}
 
 	public static void checkPlayerFish(Player player, Location location, int entityid) {
-		checkPlayerDistance(player, location);
-		checkPlayerFlying(player, location, entityid);
+		//checkPlayerDistance(player, location);
+		//checkPlayerFlying(player, location, entityid);
 		int checkdelay = 2;
 		int accuracy = 1;
 		double allowedstep = 2;
+		if (Metadata.getMetadata(player, "rapeling").equals(false)) {
+			setPlayerRapeling(player, false);
+			return;
+		}
 		if (location != null) {
 			for (Entity hook : location.getWorld().getNearbyEntities(location, accuracy, accuracy, accuracy)) {
 				if (hook.getEntityId() == entityid) {
@@ -178,6 +187,7 @@ public class Rapeling implements Listener {
 						if (player.isFlying()) {
 							player.setAllowFlight(false);
 							player.setFlying(false);
+							Metadata.setMetadata(player, "cancelrapeling", Calendar.getInstance().getTimeInMillis());
 						}
 					} else if (player.getAllowFlight() == false) {
 						setPlayerRapeling(player, "decelerate");
@@ -186,6 +196,8 @@ public class Rapeling implements Listener {
 						@Override
 						public void run() {
 							checkPlayerFish(player, location, entityid);
+							checkPlayerDistance(player, location);
+							checkPlayerFlying(player, location, entityid);
 						}
 					}, checkdelay);
 					return;
@@ -238,7 +250,7 @@ public class Rapeling implements Listener {
 					//		 hook.remove();
 					//	}
 					setPlayerRapeling(player, false);
-					Metadata.setMetadata(player, "cancelrapeling", true);
+					Metadata.setMetadata(player, "cancelrapeling", Calendar.getInstance().getTimeInMillis());
 					//}
 				}
 			}
