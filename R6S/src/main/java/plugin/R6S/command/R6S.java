@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,12 +28,13 @@ public class R6S implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof BlockCommandSender) {
 			BlockCommandSender commandblock = (BlockCommandSender)sender;
-			Location location = commandblock.getBlock().getLocation();
+			Block cblock = commandblock.getBlock();
+			Location location = cblock.getLocation();
 			if (args.length == 0) return false;
 			switch (args[0]) {
 			case "camera":
 				if (args.length <= 2) return false;
-				for (Entity entity : commandblock.getBlock().getWorld().getNearbyEntities(location, 4, 4, 4)) {
+				for (Entity entity : cblock.getWorld().getNearbyEntities(location, 4, 4, 4)) {
 					if (entity instanceof Player) {
 						if (Metadata.getMetadata(entity, "stonebutton") != null) {
 							if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(entity, "stonebutton") <= 2000) { // 2sec
@@ -42,6 +44,28 @@ public class R6S implements CommandExecutor{
 									useSecurityCamera(player, team, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
 									return true;
 								}
+							}
+						}
+					}
+				}
+			case "teaming":
+				if (args.length <= 2) return false;
+				switch (args[1]) {
+				case "random":
+					int defaultradius = 5;
+					int defaultdepth = 5;
+					if (!(StringUtils.isEmpty(args[2]))) {
+						defaultradius = Integer.parseInt(args[2]);
+						if (!(StringUtils.isEmpty(args[3]))) {
+							defaultdepth = Integer.parseInt(args[3]);
+						}
+					}
+					Player[] playerlist;
+					for (Entity entity : cblock.getWorld().getNearbyEntities(location, defaultradius, defaultdepth, defaultradius)) {
+						if (entity instanceof Player) {
+							Player targetplayer = (Player) entity;
+							if (targetplayer.getGameMode() == GameMode.ADVENTURE || targetplayer.getGameMode() == GameMode.SURVIVAL) {
+
 							}
 						}
 					}
