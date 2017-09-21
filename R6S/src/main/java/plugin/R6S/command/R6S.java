@@ -1,6 +1,8 @@
 package plugin.R6S.command;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,12 +22,31 @@ import org.bukkit.plugin.Plugin;
 import plugin.R6S.R6SPlugin;
 import plugin.R6S.api.Glowing;
 import plugin.R6S.api.Metadata;
+import plugin.R6S.api.ScoreboardTeam;
 
 public class R6S implements CommandExecutor{
 	static Plugin r6s = R6SPlugin.getInstance();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (StringUtils.equals(args[0], "teaming") && StringUtils.equals(args[1], "player")) {
+			// case "player":
+					Player target = r6s.getServer().getPlayer(args[2]);
+					Metadata.setMetadata(target, "team", args[3]);
+					switch (args[3]) {
+					case "red":
+						ScoreboardTeam.removePlayer(target, "CounterTerrorist");
+						ScoreboardTeam.addPlayer(target, "Terrorist");
+						break;
+					case "blue":
+						ScoreboardTeam.removePlayer(target, "Terrorist");
+						ScoreboardTeam.addPlayer(target, "CounterTerrorist");
+						break;
+					default:
+						return true;
+					}
+					return true;
+		}
 		if (sender instanceof BlockCommandSender) {
 			BlockCommandSender commandblock = (BlockCommandSender)sender;
 			Block cblock = commandblock.getBlock();
@@ -60,15 +81,16 @@ public class R6S implements CommandExecutor{
 							defaultdepth = Integer.parseInt(args[3]);
 						}
 					}
-					Player[] playerlist;
+					List<Player> playerlist = new ArrayList<Player>();
 					for (Entity entity : cblock.getWorld().getNearbyEntities(location, defaultradius, defaultdepth, defaultradius)) {
 						if (entity instanceof Player) {
 							Player targetplayer = (Player) entity;
 							if (targetplayer.getGameMode() == GameMode.ADVENTURE || targetplayer.getGameMode() == GameMode.SURVIVAL) {
-
+								playerlist.add(targetplayer);
 							}
 						}
 					}
+					break;
 				}
 			}
 		}

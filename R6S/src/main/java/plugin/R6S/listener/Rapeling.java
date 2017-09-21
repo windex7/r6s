@@ -39,12 +39,16 @@ public class Rapeling implements Listener {
 			if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.IN_GROUND
 					|| event.getState() == org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT) {
 				Location location = event.getHook().getLocation();
-				Location blockloc = location.add(0, -1, 0);
+				Location blockloc = location.add(0, -0.5, 0);
 				if (location.getBlock().getType() == Material.AIR && blockloc.getBlock().getType() == Material.AIR) {
 					setPlayerRapeling(player, false);
 					return;
 				}
 				if (Metadata.getMetadata(player, "rapeling").equals(false)) {
+					if (Metadata.getMetadata(player, "decelerate").equals(true)) {
+						event.setCancelled(true);
+						return;
+					}
 					event.setCancelled(true);
 					Metadata.setMetadata(player, "snapped", false);
 					setPlayerRapeling(player, "decelerate");
@@ -77,6 +81,8 @@ public class Rapeling implements Listener {
 				player.setFlySpeed(flyspeed);
 				Metadata.setMetadata(player, "rapeling", true);
 				Metadata.setMetadata(player, "decelerate", false);
+				Metadata.setMetadata(player, "snapped", false);
+				Metadata.setMetadata(player, "cancelrapeling", false);
 			} //else
 			if (state == false || isPlayerGrappleSnapped(player)) { // as deceleration is glitched
 				setRodStatement(player, "disabled");
@@ -85,6 +91,8 @@ public class Rapeling implements Listener {
 				player.setFlySpeed(defaultflyspeed);
 				Metadata.setMetadata(player, "rapeling", false);
 				Metadata.setMetadata(player, "decelerate", false);
+				Metadata.setMetadata(player, "snapped", false);
+				Metadata.setMetadata(player, "cancelrapeling", false);
 				//Metadata.setMetadata(player, "rapelingtimer", Calendar.getInstance().getTimeInMillis());
 			}
 		}
@@ -115,11 +123,11 @@ public class Rapeling implements Listener {
 				Metadata.setMetadata(player, "rapeling", false);
 				Metadata.setMetadata(player, "decelerate", true);
 				setRodStatement(player, "decelerate");
+				player.setVelocity(new Vector(player.getVelocity().getX(), player.getVelocity().getY() + deceleration, player.getVelocity().getZ()));
 				if (player.getVelocity().getY() >= minvel) {
 					setPlayerRapeling(player, true);
 					return;
 				}
-				player.setVelocity(new Vector(player.getVelocity().getX(), player.getVelocity().getY() + deceleration, player.getVelocity().getZ()));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 					@Override
 					public void run() {

@@ -8,21 +8,21 @@ import org.bukkit.scoreboard.Team;
 
 @SuppressWarnings("deprecation")
 public class ScoreboardTeam {
-	public void addPlayer(Player player, String team) {
+	public static void addPlayer(Player player, String team) {
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		Scoreboard board = manager.getNewScoreboard();
 		Team targetteam = board.getTeam(team);
 		targetteam.addPlayer(player);
 	}
 
-	public void removePlayer(Player player, String team) {
+	public static void removePlayer(Player player, String team) {
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		Scoreboard board = manager.getNewScoreboard();
 		Team targetteam = board.getTeam(team);
 		targetteam.removePlayer(player);
 	}
 
-	public void checkPlayerTeam(Player player) {
+	public static void checkPlayerTeam(Player player) {
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
 		Scoreboard board = manager.getNewScoreboard();
 	}

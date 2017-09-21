@@ -15,6 +15,7 @@ import plugin.R6S.listener.ClickedCommandBlock;
 import plugin.R6S.listener.PreventCertainExplosion;
 import plugin.R6S.listener.PreventHangingGlitch;
 import plugin.R6S.listener.PreventInventoryGlitch;
+import plugin.R6S.listener.PreventPlayerBreakBlock;
 import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
 import plugin.R6S.listener.ReleasePlayerData;
@@ -38,6 +39,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				new PreventCertainExplosion(),
 				new PreventHangingGlitch(),
 				new PreventInventoryGlitch(),
+				new PreventPlayerBreakBlock(),
 				new ProjectileEpicGlass(),
 				new Rapeling(),
 				new ReleasePlayerData(),
