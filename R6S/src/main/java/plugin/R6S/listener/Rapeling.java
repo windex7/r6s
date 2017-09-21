@@ -1,7 +1,5 @@
 package plugin.R6S.listener;
 
-import java.util.Calendar;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -33,7 +31,7 @@ public class Rapeling implements Listener {
 	public void onPlayerGrapple(PlayerFishEvent event) {
 		Player player = event.getPlayer();
 		GameMode gamemode = player.getGameMode();
-		long canceltimer = 5000; // ms
+		//long canceltimer = 5000; // ms
 
 		// if (player exists in rapelable region) <- needs WorldGuard
 		// configuration
@@ -46,17 +44,7 @@ public class Rapeling implements Listener {
 					setPlayerRapeling(player, false);
 					return;
 				}
-				if (Metadata.getMetadata(player, "rapeling").equals(false)
-						|| !(Metadata.getMetadata(player, "rapeling") != null)) {
-					if (Metadata.getMetadata(player, "cancelrapeling") != null) {
-						if ((long)Metadata.getMetadata(player, "cancelrapeling") >= 1919L && Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "cancelrapeling") >= canceltimer) {
-							Metadata.setMetadata(player, "cancelrapeling", 0L);
-							setPlayerRapeling(player, false);
-							return;
-						} else if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "cancelrapeling") <= canceltimer){
-							Metadata.setMetadata(player, "cancelrapeling", 0L);
-						}
-					}
+				if (Metadata.getMetadata(player, "rapeling").equals(false)) {
 					event.setCancelled(true);
 					Metadata.setMetadata(player, "snapped", false);
 					setPlayerRapeling(player, "decelerate");
@@ -69,7 +57,6 @@ public class Rapeling implements Listener {
 					setPlayerRapeling(player, false);
 					return;
 				}
-
 			} else if (event.getState() == org.bukkit.event.player.PlayerFishEvent.State.CAUGHT_FISH) {
 				event.setCancelled(true);
 				event.getHook().remove();
@@ -84,35 +71,21 @@ public class Rapeling implements Listener {
 		GameMode gamemode = player.getGameMode();
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
 			if (state) {
-				ItemStack fishingrod = new ItemStack(player.getInventory().getItemInMainHand());
-				ItemMeta meta = fishingrod.getItemMeta();
-				meta.setDisplayName("[RAPELING]");
-				fishingrod.setItemMeta(meta);
-				fishingrod.addEnchantment(Enchantment.DURABILITY, 1);
-				player.getInventory().setItemInMainHand(fishingrod);
+				setRodStatement(player, "rapeling");
 				player.setAllowFlight(true);
 				player.setFlying(true);
 				player.setFlySpeed(flyspeed);
 				Metadata.setMetadata(player, "rapeling", true);
-				Metadata.setMetadata(player, "decelerating", false);
+				Metadata.setMetadata(player, "decelerate", false);
 			} //else
 			if (state == false || isPlayerGrappleSnapped(player)) { // as deceleration is glitched
-				for (ItemStack item : player.getInventory()) {
-					if (item != null) {
-						if (item.getType() == Material.FISHING_ROD) {
-							ItemMeta meta = item.getItemMeta();
-							meta.setDisplayName("Grapple");
-							item.setItemMeta(meta);
-							if (item.containsEnchantment(Enchantment.DURABILITY)) item.removeEnchantment(Enchantment.DURABILITY);
-						}
-					}
-				}
+				setRodStatement(player, "disabled");
 				player.setAllowFlight(false);
 				player.setFlying(false);
 				player.setFlySpeed(defaultflyspeed);
 				Metadata.setMetadata(player, "rapeling", false);
-				Metadata.setMetadata(player, "decelerating", false);
-				Metadata.setMetadata(player, "rapelingtimer", Calendar.getInstance().getTimeInMillis());
+				Metadata.setMetadata(player, "decelerate", false);
+				//Metadata.setMetadata(player, "rapelingtimer", Calendar.getInstance().getTimeInMillis());
 			}
 		}
 	}
@@ -123,36 +96,28 @@ public class Rapeling implements Listener {
 			setPlayerRapeling(player, false);
 			return;
 		}
-		int interval = 2;
-		double deceleration = 0.02;
+		int interval = 1;
+		double deceleration = 0.1;
 		double minvel = -0.1;
-		long rapelingtimer = 1000; // ms
+		// long rapelingtimer = 1000; // ms
 		GameMode gamemode = player.getGameMode();
 		if (gamemode == GameMode.SURVIVAL || gamemode == GameMode.ADVENTURE) {
 			switch (state) {
 			case "decelerate":
-				if (Metadata.getMetadata(player, "rapelingtimer") != null) {
-					if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "rapelingtimer") <= rapelingtimer) {
-						return;
-					}
-				}
+				//if (Metadata.getMetadata(player, "rapelingtimer") != null) {
+				//	if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(player, "rapelingtimer") <= rapelingtimer) {
+				//		return;
+				//	}
+				//}
+				player.setAllowFlight(false);
+				player.setFlying(false);
+				player.setFlySpeed(defaultflyspeed);
+				Metadata.setMetadata(player, "rapeling", false);
+				Metadata.setMetadata(player, "decelerate", true);
+				setRodStatement(player, "decelerate");
 				if (player.getVelocity().getY() >= minvel) {
 					setPlayerRapeling(player, true);
-				} else {
-					player.setAllowFlight(false);
-					player.setFlying(false);
-					player.setFlySpeed(defaultflyspeed);
-					Metadata.setMetadata(player, "rapeling", false);
-					Metadata.setMetadata(player, "decelerating", true);
-					for (ItemStack item : player.getInventory()) {
-					if (item != null) {
-						if (item.getType() == Material.FISHING_ROD) {
-							ItemMeta meta = item.getItemMeta();
-							meta.setDisplayName("[DECELERATING]");
-							item.setItemMeta(meta);
-							if (item.containsEnchantment(Enchantment.DURABILITY)) item.removeEnchantment(Enchantment.DURABILITY);
-						}
-					}
+					return;
 				}
 				player.setVelocity(new Vector(player.getVelocity().getX(), player.getVelocity().getY() + deceleration, player.getVelocity().getZ()));
 				Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
@@ -162,7 +127,6 @@ public class Rapeling implements Listener {
 					}
 				}, interval);
 				return;
-				}
 			}
 		}
 	}
@@ -170,27 +134,38 @@ public class Rapeling implements Listener {
 	public static void checkPlayerFish(Player player, Location location, int entityid) {
 		//checkPlayerDistance(player, location);
 		//checkPlayerFlying(player, location, entityid);
-		int checkdelay = 2;
+		int checkdelay = 1;
 		int accuracy = 1;
 		double allowedstep = 2;
-		if (Metadata.getMetadata(player, "rapeling").equals(false)) {
-			setPlayerRapeling(player, false);
-			return;
-		}
+		double declinespeed = -0.3;
+		//if (Metadata.getMetadata(player, "rapeling").equals(false)) {
+		//	if (Metadata.getMetadata(player, "decelerate").equals(false)) {
+		//		setPlayerRapeling(player, false);
+		//	return;
+		//	}
+		//}
 		if (location != null) {
 			for (Entity hook : location.getWorld().getNearbyEntities(location, accuracy, accuracy, accuracy)) {
 				if (hook.getEntityId() == entityid) {
 					if (player.isSneaking() && player.isFlying()) {
-						player.setVelocity(new Vector(player.getVelocity().getX(), -0.4, player.getVelocity().getZ()));
+						player.setVelocity(new Vector(player.getVelocity().getX(), declinespeed, player.getVelocity().getZ()));
 					}
 					if (player.getLocation().getY() - allowedstep >= location.getY()) {
 						if (player.isFlying()) {
-							player.setAllowFlight(false);
-							player.setFlying(false);
-							Metadata.setMetadata(player, "cancelrapeling", Calendar.getInstance().getTimeInMillis());
+							setPlayerRapeling(player, false);
+							// player.setAllowFlight(false);
+							// player.setFlying(false);
+							// Metadata.setMetadata(player, "cancelrapeling", false);
 						}
-					} else if (player.getAllowFlight() == false) {
-						setPlayerRapeling(player, "decelerate");
+					} //else if (player.getAllowFlight() == false) {
+						// setPlayerRapeling(player, "decelerate");
+					//}
+					if (Metadata.getMetadata(player, "cancelrapeling") != null) {
+						if (Metadata.getMetadata(player, "cancelrapeling").equals(true)) {
+							setPlayerRapeling(player, false);
+							Metadata.setMetadata(player, "cancelrapeling", false);
+							return;
+						}
 					}
 					Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 						@Override
@@ -242,7 +217,7 @@ public class Rapeling implements Listener {
 	public static void checkPlayerFlying(Player player, Location location, int entityid) {
 		if (player.isFlying() == false && player.getAllowFlight()) {
 			if (Metadata.getMetadata(player, "rapeling").equals(true)) {
-				if (Metadata.getMetadata(player, "decelerating").equals(true)) return;
+				// if (Metadata.getMetadata(player, "decelerate").equals(true)) return;
 				if (player.getLocation().getY() >= location.getY() + 3 || player.getLocation().getY() <= location.getY() - 3) {
 					//int accuracy = 1;
 					//for (Entity hook : location.getWorld().getNearbyEntities(location, accuracy, accuracy, accuracy)) {
@@ -250,8 +225,8 @@ public class Rapeling implements Listener {
 					//		 hook.remove();
 					//	}
 					setPlayerRapeling(player, false);
-					Metadata.setMetadata(player, "cancelrapeling", Calendar.getInstance().getTimeInMillis());
-					//}
+					Metadata.setMetadata(player, "cancelrapeling", true);
+				//}
 				}
 			}
 		}
@@ -261,10 +236,39 @@ public class Rapeling implements Listener {
 	public static void pullupPlayerGrapple(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
+		double risespeed = 0.5;
 		if (item != null) {
 			if (item.getType() == Material.FISHING_ROD && player.isFlying()
 					&& (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
-				player.setVelocity(new Vector(player.getVelocity().getX(), 0.4, player.getVelocity().getZ()));
+				player.setVelocity(new Vector(player.getVelocity().getX(), risespeed, player.getVelocity().getZ()));
+			}
+		}
+	}
+
+	public static void setRodStatement(Player player, String state) {
+		for (ItemStack item : player.getInventory()) {
+			if (item != null) {
+				if (item.getType() == Material.FISHING_ROD) {
+					ItemMeta meta = item.getItemMeta();
+					switch (state) {
+					case "decelerate":
+						meta.setDisplayName("[DECELERATING]");
+						item.setItemMeta(meta);
+						if (item.containsEnchantment(Enchantment.DURABILITY)) item.removeEnchantment(Enchantment.DURABILITY);
+						break;
+					case "rapeling":
+						meta.setDisplayName("[RAPELING]");
+						item.setItemMeta(meta);
+						item.addEnchantment(Enchantment.DURABILITY, 1);
+						break;
+					case "disabled":
+						meta.setDisplayName("Grapple");
+						item.setItemMeta(meta);
+						if (item.containsEnchantment(Enchantment.DURABILITY)) item.removeEnchantment(Enchantment.DURABILITY);
+						break;
+					}
+					player.updateInventory();
+				}
 			}
 		}
 	}
