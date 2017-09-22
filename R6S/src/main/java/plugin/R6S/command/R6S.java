@@ -35,15 +35,15 @@ public class R6S implements CommandExecutor{
 					Metadata.setMetadata(target, "team", args[3]);
 					switch (args[3]) {
 					case "red":
-						ScoreboardTeam.removePlayer(target, "CounterTerrorist");
-						ScoreboardTeam.addPlayer(target, "Terrorist");
+						ScoreboardTeam.removeEntry(target.getName(), "CounterTerrorist");
+						ScoreboardTeam.addEntry(target.getName(), "Terrorist");
 						break;
 					case "blue":
-						ScoreboardTeam.removePlayer(target, "Terrorist");
-						ScoreboardTeam.addPlayer(target, "CounterTerrorist");
+						ScoreboardTeam.removeEntry(target.getName(), "Terrorist");
+						ScoreboardTeam.addEntry(target.getName(), "CounterTerrorist");
 						break;
 					default:
-						return true;
+						return false;
 					}
 					return true;
 		}
