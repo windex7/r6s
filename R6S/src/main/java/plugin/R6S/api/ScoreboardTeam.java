@@ -8,7 +8,7 @@ import org.bukkit.scoreboard.Team;
 public class ScoreboardTeam {
 	public static void addEntry(String entry, String team) {
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
-		Scoreboard board = manager.getNewScoreboard();
+		Scoreboard board = manager.getMainScoreboard();
 		Team targetteam = board.getTeam(team);
 		if (!(targetteam.hasEntry(entry))) {
 			targetteam.addEntry(entry);
@@ -17,7 +17,7 @@ public class ScoreboardTeam {
 
 	public static void removeEntry(String entry, String team) {
 		ScoreboardManager manager = Bukkit.getScoreboardManager();
-		Scoreboard board = manager.getNewScoreboard();
+		Scoreboard board = manager.getMainScoreboard();
 		Team targetteam = board.getTeam(team);
 		if (targetteam.hasEntry(entry)) {
 			targetteam.removeEntry(entry);
