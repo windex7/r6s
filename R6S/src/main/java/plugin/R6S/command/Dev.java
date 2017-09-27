@@ -74,12 +74,12 @@ public class Dev implements CommandExecutor {
 				return true;
 			case "writenbtstring":
 				if (args.length <= 2) return false;
-				player.getInventory().setItemInMainHand(NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], args[2]));
+				player.getInventory().setItemInMainHand(NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], args[2], "string"));
 				player.sendMessage("successfully wrote nbt to the item in your main hand! key: " + args[1] + " , value: " + args[2]);
 				return true;
 			case "writenbtint":
 				if (args.length <= 2) return false;
-				player.getInventory().setItemInMainHand(NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], Integer.parseInt(args[2])));
+				player.getInventory().setItemInMainHand(NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], args[2], "int"));
 				player.sendMessage("successfully wrote nbt to the item in your main hand! key: " + args[1] + " , value: " + args[2]);
 				return true;
 			case "writemetadata":

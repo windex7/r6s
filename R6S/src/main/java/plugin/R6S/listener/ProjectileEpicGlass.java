@@ -72,10 +72,12 @@ public class ProjectileEpicGlass implements Listener{
 								for (MetadataValue meta : hitblock.getMetadata("damage")) {
 									hitblock.setMetadata("damage", new FixedMetadataValue(r6s, meta.asInt() + 1));
 									if (meta.asInt() >= 3) {
+										hitblock.removeMetadata("damage", r6s);
 										hitblock.setType(Material.AIR);
 										// arrow.remove();
 										// cloneArrow(arrow, shooter);
 									}
+									break;
 								}
 							} else {
 								hitblock.setMetadata("damage", new FixedMetadataValue(r6s, 1));

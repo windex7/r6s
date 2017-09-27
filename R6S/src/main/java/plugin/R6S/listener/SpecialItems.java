@@ -142,14 +142,15 @@ public class SpecialItems implements Listener {
 									new SimpleDateFormat("ddHHmmssSSS").format(Calendar.getInstance().getTime()))));
 							item.setItemMeta(itemmeta);
 							item.addUnsafeEnchantment(Enchantment.LUCK, 4);
-							NBT.writeItemTag(item, "unavailable", "true");
+							ItemStack nbtitem = NBT.writeItemTag(item, "bound", "true", "string");
+							player.getInventory().setItemInMainHand(nbtitem);
 							player.updateInventory();
 							for (int i = 0; i < fragfuse; i++) {
 								final int l = i;
 								Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 									@Override
 									public void run() {
-										if (player.getInventory().contains(item)) {
+										if (player.getInventory().contains(nbtitem)) {
 											fragdelay.put(item.getItemMeta().getLore().toString(), l);
 											player.setExp((1F * (float) l / (float) fragfuse));
 										} else {
@@ -161,9 +162,9 @@ public class SpecialItems implements Listener {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 								@Override
 								public void run() {
-									if (player.getInventory().contains(item)) {
+									if (player.getInventory().contains(nbtitem)) {
 										player.getWorld().createExplosion(player.getLocation(), 4F);
-										player.getInventory().remove(item);
+										player.getInventory().remove(nbtitem);
 										player.setExp(0);
 										fragdelay.remove(item.getItemMeta().getLore().toString());
 									}
@@ -201,7 +202,7 @@ public class SpecialItems implements Listener {
 							// event.setCancelled(true);
 							Item grenade = player.getWorld().dropItem(player.getEyeLocation(),
 									new ItemStack(Material.SLIME_BALL));
-							NBT.writeEntityTag(grenade, "item", "PickupDelay", 32767);
+							NBT.writeEntityTag(grenade, "item", "PickupDelay", 32767, "int");
 							grenade.setVelocity(player.getLocation().getDirection().multiply(0.9D));
 							Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 								@Override
@@ -332,7 +333,7 @@ public class SpecialItems implements Listener {
 					arrow.setKnockbackStrength(arrowpunch);
 					if (isarrowcritical)
 						arrow.setCritical(true);
-					NBT.writeEntityTag(arrow, "arrow", "pickup", 0);
+					NBT.writeEntityTag(arrow, "arrow", "pickup", 0, "int");
 				}
 				// }
 				return;

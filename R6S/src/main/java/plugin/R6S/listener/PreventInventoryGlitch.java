@@ -1,11 +1,13 @@
 package plugin.R6S.listener;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,9 +21,10 @@ public class PreventInventoryGlitch implements Listener {
 		// String invname = inventory.getName();
 		ItemStack cursoritem = event.getCursor();
 		ItemStack item = event.getCurrentItem();
+		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
 		if (item != null && item.getType() != Material.AIR) {
-			if (NBT.readItemTag(item, "string", "unavailable") != null) {
-				// --any item with nbttag which key is "unavailable" can't be
+			if (NBT.readItemTag(item, "bound", "string") != null) {
+				// --any item with nbttag which key is "bound" can't be
 				// moved whatever the value is.--
 				event.setCancelled(true);
 				event.setResult(Result.DENY);
@@ -29,12 +32,25 @@ public class PreventInventoryGlitch implements Listener {
 			}
 		}
 		if (cursoritem != null && cursoritem.getType() != Material.AIR) {
-			if (NBT.readItemTag(cursoritem, "string", "unavailable") != null) {
-				// --any item with nbttag which key is "unavailable" can't be
+			if (NBT.readItemTag(cursoritem, "bound", "string") != null) {
+				// --any item with nbttag which key is "bound" can't be
 				// moved whatever the value is.--
 				event.setCancelled(true);
 				event.setResult(Result.DENY);
 				player.updateInventory();
+			}
+		}
+	}
+
+	@EventHandler
+	public void onDropItem(PlayerDropItemEvent event) {
+		Player player = event.getPlayer();
+		ItemStack item = event.getItemDrop().getItemStack();
+		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
+		if (item != null && item.getType() != Material.AIR) {
+			if (NBT.readItemTag(item, "bound", "string") != null) {
+				event.getItemDrop().remove();
+				player.getInventory().setItemInMainHand(item);
 			}
 		}
 	}

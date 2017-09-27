@@ -2,11 +2,13 @@ package plugin.R6S.command;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -26,6 +28,7 @@ import plugin.R6S.api.ScoreboardTeam;
 
 public class R6S implements CommandExecutor{
 	static Plugin r6s = R6SPlugin.getInstance();
+	static HashMap<Location, Long> cameract = new HashMap<>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -35,12 +38,10 @@ public class R6S implements CommandExecutor{
 					Metadata.setMetadata(target, "team", args[3]);
 					switch (args[3]) {
 					case "red":
-						ScoreboardTeam.removeEntry(target.getName(), "CounterTerrorist");
-						ScoreboardTeam.addEntry(target.getName(), "Terrorist");
+						ScoreboardTeam.registerPlayerTeam(target, "red");
 						break;
 					case "blue":
-						ScoreboardTeam.removeEntry(target.getName(), "Terrorist");
-						ScoreboardTeam.addEntry(target.getName(), "CounterTerrorist");
+						ScoreboardTeam.registerPlayerTeam(target, "blue");
 						break;
 					default:
 						return false;
@@ -62,7 +63,7 @@ public class R6S implements CommandExecutor{
 								Player player = (Player)entity;
 								if (Metadata.getMetadata(player, "team") != null) {
 									String team = Metadata.getMetadata(player, "team").toString();
-									useSecurityCamera(player, team, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+									useSecurityCamera(player, team, Integer.parseInt(args[1]), Integer.parseInt(args[2]), location);
 									return true;
 								}
 							}
@@ -97,10 +98,24 @@ public class R6S implements CommandExecutor{
 		return false;
 	}
 
-	public static void useSecurityCamera(Player player, String team, int y1, int y2) {
+	public static void useSecurityCamera(Player player, String team, int y1, int y2, Location location) {
 		int duration = 200; // 10sec
 		if (StringUtils.isEmpty(team)) return;
 		if (!(player != null)) return;
+
+		long time = Calendar.getInstance().getTimeInMillis();
+		long cooltime = 30000; // 30sec
+		if (cameract.containsKey(location)) {
+			if (time - cameract.get(location) <= cooltime) {
+				long ctsec = (time - cameract.get(location)) / 1000;
+				player.sendMessage(ChatColor.DARK_RED + "this security camera is still in cooldown! try again in" + String.valueOf(ctsec) + "sec!");
+				return;
+			} // else { // do below
+			// }
+		} else {
+			cameract.put(location, time);
+		}
+
 		for (LivingEntity entity : player.getWorld().getLivingEntities()) {
 			if (entity != null) {
 				if (entity instanceof Player) {
@@ -117,11 +132,11 @@ public class R6S implements CommandExecutor{
 	public static void checkTargetInCamera(Player player, int y1, int y2, int duration) {
 		if (duration <= 0) return;
 		int interval = 10; // duration(200) must be able to be devided by interval(10)
+		int remainlength = duration - interval;
 		double y = player.getLocation().getY();
 		if ((y1 >= y && y >= y2) || (y1 <= y && y <= y2)) {
 			Glowing.setPlayerGlowing(player, interval * 2);
 		}
-		int remainlength = duration - interval;
 		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 			@Override
 			public void run() {

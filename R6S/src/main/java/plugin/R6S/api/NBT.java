@@ -39,18 +39,18 @@ public class NBT {
 		return null;
 	}
 
-	public static ItemStack writeItemTag(ItemStack item, String key, Object value) {
+	public static ItemStack writeItemTag(ItemStack item, String key, Object value, String datatype) {
 		if (!(item != null) || item.getType() == Material.AIR) return item;
 		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound nbttag = nmsItem.getTag();
 		String valuestr = value.toString();
 		if (value != null && !(valuestr.equals("null"))) {
 			if (nbttag != null) {
-				nmsItem.setTag(setNBT(nbttag, key, value));
+				nmsItem.setTag(setNBT(nbttag, key, value, datatype));
 			}
 			else {
 				NBTTagCompound newnbttag = new NBTTagCompound();
-				nmsItem.setTag(setNBT(newnbttag, key, value));
+				nmsItem.setTag(setNBT(newnbttag, key, value, datatype));
 			}
 			ItemStack nbtitem = CraftItemStack.asBukkitCopy(nmsItem);
 			return nbtitem;
@@ -60,9 +60,10 @@ public class NBT {
 		}
 	}
 
-	private static NBTTagCompound setNBT(NBTTagCompound nbttag, String key, Object value) {
+	private static NBTTagCompound setNBT(NBTTagCompound nbttag, String key, Object value, String datatype) {
 		String valuestr = value.toString();
-		switch (value.getClass().getSimpleName().toLowerCase()) {
+		//switch (value.getClass().getSimpleName().toLowerCase()) {
+		switch (datatype) {
 		case "string":
 			nbttag.setString(key, valuestr);
 			break;
@@ -95,12 +96,12 @@ public class NBT {
 		return nbtitem;
 	}
 
-	public static void writeEntityTag(Entity entity, String entitytype, String key, Object value) {
+	public static void writeEntityTag(Entity entity, String entitytype, String key, Object value, String datatype) {
 		net.minecraft.server.v1_9_R2.Entity nmsEntity = ((CraftEntity) entity).getHandle();
 		NBTTagCompound nbttag = new NBTTagCompound();
 		nmsEntity.c(nbttag);
-		NBTTagCompound setnbttag = setNBT(nbttag, key, value);
-		if (!(entitytype != null && !(entitytype.equals(null)))) return;
+		NBTTagCompound setnbttag = setNBT(nbttag, key, value, datatype);
+		// if (!(entitytype != null && !(entitytype.equals(null)))) return;
 		switch (entitytype.toLowerCase()) {
 		case "arrow":
 			EntityArrow nbtentityarrow = (EntityArrow) nmsEntity;
