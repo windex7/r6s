@@ -12,6 +12,7 @@ import plugin.R6S.command.Dev;
 import plugin.R6S.command.R6S;
 import plugin.R6S.listener.ChangePlayerAttributes;
 import plugin.R6S.listener.ClickedCommandBlock;
+import plugin.R6S.listener.DisableOffhand;
 import plugin.R6S.listener.PreventCertainExplosion;
 import plugin.R6S.listener.PreventHangingGlitch;
 import plugin.R6S.listener.PreventInventoryGlitch;
@@ -36,6 +37,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		registerEvents(
 				new ChangePlayerAttributes(),
 				new ClickedCommandBlock(),
+				new DisableOffhand(),
 				new PreventCertainExplosion(),
 				new PreventHangingGlitch(),
 				new PreventInventoryGlitch(),

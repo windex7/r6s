@@ -210,7 +210,12 @@ public class SpecialItems implements Listener {
 									grenade.getWorld().createExplosion(grenade.getLocation(), 4F);
 								}
 							}, fragfuse - fragdelay.get(item.getItemMeta().getLore().toString()));
-							fragdelay.remove(item.getItemMeta().getLore().toString());
+							Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+								@Override
+								public void run() {
+									fragdelay.remove(item.getItemMeta().getLore().toString());
+								}
+							}, fragfuse);
 							// EnderPearl fraggrenade =
 							// player.launchProjectile(EnderPearl.class);
 							// fraggrenade.setShooter(null);
