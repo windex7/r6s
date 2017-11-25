@@ -70,7 +70,7 @@ public class R6S implements CommandExecutor{
 						}
 					}
 				}
-			case "teaming":
+			case "joingame":
 				if (args.length <= 2) return false;
 				switch (args[1]) {
 				case "random":
@@ -91,7 +91,9 @@ public class R6S implements CommandExecutor{
 							}
 						}
 					}
-					break;
+					// getTeamBalance
+
+					return true;
 				}
 			}
 		}
