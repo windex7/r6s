@@ -6,8 +6,10 @@ import java.lang.reflect.Field;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.minecraft.server.v1_9_R2.Item;
+import plugin.R6S.api.DamageTick;
 import plugin.R6S.command.Dev;
 import plugin.R6S.command.R6S;
 import plugin.R6S.listener.ChangePlayerAttributes;
@@ -15,6 +17,7 @@ import plugin.R6S.listener.ClickedCommandBlock;
 import plugin.R6S.listener.DisableOffhand;
 import plugin.R6S.listener.PreventCertainExplosion;
 import plugin.R6S.listener.PreventHangingGlitch;
+import plugin.R6S.listener.PreventInteractGlitch;
 import plugin.R6S.listener.PreventInventoryGlitch;
 import plugin.R6S.listener.PreventPlayerBreakBlock;
 import plugin.R6S.listener.ProjectileEpicGlass;
@@ -40,6 +43,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				new DisableOffhand(),
 				new PreventCertainExplosion(),
 				new PreventHangingGlitch(),
+				new PreventInteractGlitch(),
 				new PreventInventoryGlitch(),
 				new PreventPlayerBreakBlock(),
 				new ProjectileEpicGlass(),
@@ -70,6 +74,20 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
+
+		// remove all entities' damage tick every tick
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				DamageTick.removeDamageTickAllEntity();
+			}
+		}.runTaskTimer(instance, 20, 1);
+		//Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(instance, new Runnable() {
+		//	@Override
+		//	public void run() {
+		//		DamageTick.removeDamageTickAllEntity();
+		//	}
+		//}, 1, 1);
 
 		// success message
 		getLogger().info("****Successfully enabled R6S plugin!****");

@@ -26,6 +26,8 @@ public class NBT {
 					return nbttag.getInt(key);
 				case "float":
 					return nbttag.getFloat(key);
+				case "long":
+					return nbttag.getLong(key);
 				case "double":
 					return nbttag.getDouble(key);
 				case "boolean":
@@ -73,6 +75,8 @@ public class NBT {
 		case "float":
 			nbttag.setFloat(key, new Float(valuestr));
 			break;
+		case "long":
+			nbttag.setLong(key, new Long(valuestr));
 		case "double":
 			nbttag.setDouble(key, new Double(valuestr));
 			break;

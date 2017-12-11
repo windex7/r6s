@@ -10,6 +10,25 @@ public class ScoreboardTeam {
 	static ScoreboardManager manager = Bukkit.getScoreboardManager();
 	static Scoreboard board = manager.getMainScoreboard();
 
+	final static String red = "Terrorist";
+	final static String blue = "CounterTerrorist";
+	final static String white = "FFA";
+	final static Team redteam = board.getTeam(red);
+	final static Team blueteam = board.getTeam(blue);
+
+	public static String getTeamName(String color) {
+		switch (color) {
+		case "red":
+			return red;
+		case "blue":
+			return blue;
+		case "white":
+			return white;
+		default:
+			return null;
+		}
+	}
+
 	public static void addEntry(String entry, String team) {
 		Team targetteam = board.getTeam(team);
 		if (!(targetteam.hasEntry(entry))) {
@@ -27,13 +46,23 @@ public class ScoreboardTeam {
 	public static void registerPlayerTeam(Player target, String team) {
 		switch (team) {
 		case "red":
-			ScoreboardTeam.removeEntry(target.getName(), "CounterTerrorist");
-			ScoreboardTeam.addEntry(target.getName(), "Terrorist");
+			ScoreboardTeam.removeEntry(target.getName(), blue);
+			ScoreboardTeam.addEntry(target.getName(), red);
 			break;
 		case "blue":
-			ScoreboardTeam.removeEntry(target.getName(), "Terrorist");
-			ScoreboardTeam.addEntry(target.getName(), "CounterTerrorist");
+			ScoreboardTeam.removeEntry(target.getName(), red);
+			ScoreboardTeam.addEntry(target.getName(), blue);
 			break;
+		}
+	}
+
+	public static String getPlayerTeam(Player target) {
+		if (redteam.hasEntry(target.getName())) {
+			return "red";
+		} else if (blueteam.hasEntry(target.getName())) {
+			return "blue";
+		} else {
+			return "white";
 		}
 	}
 }

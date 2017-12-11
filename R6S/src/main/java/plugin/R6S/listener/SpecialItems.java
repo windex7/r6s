@@ -27,14 +27,18 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.entity.ThrownExpBottle;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -44,7 +48,13 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import plugin.R6S.R6SPlugin;
+import plugin.R6S.api.Gun;
+import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
+import plugin.R6S.api.Timing;
+import plugin.R6S.customitem.Rifle;
+import plugin.R6S.customitem.Shotgun;
+import plugin.R6S.customitem.Sniper;
 
 public class SpecialItems implements Listener {
 	static Plugin r6s = R6SPlugin.getInstance();
@@ -128,6 +138,18 @@ public class SpecialItems implements Listener {
 		final int fragfuse = 80;
 
 		if (item != null) {
+			if (item.getItemMeta().getDisplayName() != null) {
+				switch (item.getItemMeta().getDisplayName()) {
+				case "Shotgun":
+					Shotgun.shoot(player, item, "trigger");
+					return;
+				case "Sniper":
+					Sniper.shoot(player, item, "trigger");
+					return;
+				case "Rifle":
+					Rifle.shoot(player, item, "trigger");
+				}
+			}
 			if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
 				switch (item.getType().toString()) {
 				case "SLIME_BALL":
@@ -138,8 +160,7 @@ public class SpecialItems implements Listener {
 								return;
 							ItemMeta itemmeta = item.getItemMeta();
 							itemmeta.setDisplayName("[pin removed]");
-							itemmeta.setLore(Arrays.asList(String.valueOf(
-									new SimpleDateFormat("ddHHmmssSSS").format(Calendar.getInstance().getTime()))));
+							itemmeta.setLore(Arrays.asList(String.valueOf(Timing.getTimeString())));
 							item.setItemMeta(itemmeta);
 							item.addUnsafeEnchantment(Enchantment.LUCK, 4);
 							ItemStack nbtitem = NBT.writeItemTag(item, "bound", "true", "string");
@@ -336,8 +357,9 @@ public class SpecialItems implements Listener {
 					arrow.setVelocity(arrowvector);
 					arrow.setFireTicks(arrowfiretick);
 					arrow.setKnockbackStrength(arrowpunch);
-					if (isarrowcritical)
+					if (isarrowcritical) {
 						arrow.setCritical(true);
+					}
 					NBT.writeEntityTag(arrow, "arrow", "pickup", 0, "int");
 				}
 				// }
@@ -356,6 +378,26 @@ public class SpecialItems implements Listener {
 				return;
 			}
 		}
+	}
+
+	@EventHandler
+	public static void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		if (event.getEntity() instanceof LivingEntity) {
+			LivingEntity defender = (LivingEntity) event.getEntity();
+			if (event.getDamager() instanceof Snowball) {
+				Snowball bullet = (Snowball)event.getDamager();
+				if (Metadata.getMetadata((Entity)bullet, "gunname") != null) {
+					Gun.hitBullet(defender, bullet);
+					// DamageTick.removeDamageTick(defender);
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public static void onProjectileHit(ProjectileHitEvent event) {
+
 	}
 
 	public static Vector getRandomVector() {

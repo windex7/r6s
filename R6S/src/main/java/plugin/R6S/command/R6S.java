@@ -35,7 +35,7 @@ public class R6S implements CommandExecutor{
 		if (StringUtils.equals(args[0], "teaming") && StringUtils.equals(args[1], "player")) {
 			// case "player":
 					Player target = r6s.getServer().getPlayer(args[2]);
-					Metadata.setMetadata(target, "team", args[3]);
+					// Metadata.setMetadata(target, "team", args[3]);
 					switch (args[3]) {
 					case "red":
 						ScoreboardTeam.registerPlayerTeam(target, "red");
@@ -62,7 +62,8 @@ public class R6S implements CommandExecutor{
 							if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(entity, "stonebutton") <= 2000) { // 2sec
 								Player player = (Player)entity;
 								if (Metadata.getMetadata(player, "team") != null) {
-									String team = Metadata.getMetadata(player, "team").toString();
+									// String team = Metadata.getMetadata(player, "team").toString();
+									String team = ScoreboardTeam.getPlayerTeam(player);
 									useSecurityCamera(player, team, Integer.parseInt(args[1]), Integer.parseInt(args[2]), location);
 									return true;
 								}
@@ -101,7 +102,7 @@ public class R6S implements CommandExecutor{
 	}
 
 	public static void useSecurityCamera(Player player, String team, int y1, int y2, Location location) {
-		int duration = 200; // 10sec
+		int duration = 300; // 15sec
 		if (StringUtils.isEmpty(team)) return;
 		if (!(player != null)) return;
 
@@ -123,7 +124,7 @@ public class R6S implements CommandExecutor{
 				if (entity instanceof Player) {
 					Player target = (Player)entity;
 					if (target.getGameMode() == GameMode.CREATIVE || target.getGameMode() == GameMode.SPECTATOR) continue;
-					if (!(Objects.equals(Metadata.getMetadata(target, "team"), team))) {
+					if (!(Objects.equals(ScoreboardTeam.getPlayerTeam(target), team))) {
 						checkTargetInCamera(target, y1, y2, duration);
 					}
 				}
@@ -133,11 +134,11 @@ public class R6S implements CommandExecutor{
 
 	public static void checkTargetInCamera(Player player, int y1, int y2, int duration) {
 		if (duration <= 0) return;
-		int interval = 10; // duration(200) must be able to be devided by interval(10)
+		int interval = 20; // duration(300) must be able to be devided by interval(20)
 		int remainlength = duration - interval;
 		double y = player.getLocation().getY();
 		if ((y1 >= y && y >= y2) || (y1 <= y && y <= y2)) {
-			Glowing.setPlayerGlowing(player, interval * 2);
+			Glowing.setPlayerGlowing(player, interval * 3);
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 			@Override
