@@ -81,7 +81,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 			public void run() {
 				DamageTick.removeDamageTickAllEntity();
 			}
-		}.runTaskTimer(instance, 20, 1);
+		}.runTaskTimer(instance, 1, 1);
 		//Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(instance, new Runnable() {
 		//	@Override
 		//	public void run() {

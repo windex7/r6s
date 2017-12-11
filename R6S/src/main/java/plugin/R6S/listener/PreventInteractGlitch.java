@@ -7,8 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
-import plugin.R6S.customitem.Shotgun;
-
 public class PreventInteractGlitch implements Listener {
 	@EventHandler
 	public static void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
@@ -20,7 +18,7 @@ public class PreventInteractGlitch implements Listener {
 				if (item.getItemMeta().getDisplayName() != null) {
 					switch (item.getItemMeta().getDisplayName()) {
 					case "Shotgun":
-						Shotgun.interact(player, target, item);
+						// Shotgun.interact(player, target, item);
 					}
 				}
 			}
