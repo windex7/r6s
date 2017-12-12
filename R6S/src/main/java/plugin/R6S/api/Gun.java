@@ -9,14 +9,21 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import plugin.R6S.customitem.Rifle;
+import plugin.R6S.customitem.Shotgun;
+import plugin.R6S.customitem.Sniper;
+
 public class Gun {
 
-	public static void redirectGun(Player shooter, ItemStack gun, String mode) {
-
-	}
-
-	public static void redirectGun(Player shooter, ItemStack gun, String mode, Player victim) {
-
+	public static void redirectGun(Player player, ItemStack gun, Object[] args) {
+		switch (gun.getItemMeta().getDisplayName()) {
+		case "Shotgun":
+			Shotgun.shoot(player, gun, args);
+		case "Sniper":
+			Sniper.shoot(player, gun, args);
+		case "Rifle":
+			Rifle.shoot(player, gun, args);
+		}
 	}
 
 	public static Vector getAIM(Player player) {
@@ -25,14 +32,14 @@ public class Gun {
 		return aim;
 	}
 
-	public static void shootBullet(Player player, double speed, double damage, double kb, long number, double spread, double recoil, String gunname) {
+	public static void shootBullet(Player player, ItemStack gun, double speed, double damage, double kb, long number, double spread, double recoil, String gunname) {
 		Vector aim = getAIM(player);
 		player.setVelocity(player.getVelocity().add(aim.clone().multiply(recoil * -1)));
-		shootBullet(player, player.getEyeLocation(), aim, speed, damage, kb, number, spread, gunname);
+		shootBullet(player, gun, player.getEyeLocation(), aim, speed, damage, kb, number, spread, gunname);
 		return;
 	}
 
-	public static void shootBullet(Player shooter, Location loc, Vector direction, double speed, double damage, double kb, long number, double spread, String gunname) {
+	public static void shootBullet(Player shooter, ItemStack gun, Location loc, Vector direction, double speed, double damage, double kb, long number, double spread, String gunname) {
 		for (int i = 0; i < number; i++) {
 			Vector directionclone = direction.clone();
 			Vector aim = directionclone.add(getRandomVector().multiply(spread)).normalize().multiply(speed);
@@ -46,17 +53,23 @@ public class Gun {
 			Metadata.setMetadata(bullet, "damage", damage);
 			Metadata.setMetadata(bullet, "kb", kb);
 			Metadata.setMetadata(bullet, "gunname", gunname);
+			Metadata.setMetadata(bullet, "gun", gun);
 		}
 	}
 
 	public static void hitBullet(LivingEntity defender, Snowball bullet) {
-		if (Metadata.getMetadata(bullet, "gunname") != null) { // so that we can make bullets having no damage but kb!, and also switch(gunname) then set victim on fire or heal shooter!
-			// LivingEntity defender = (LivingEntity)hitentity;
+		if (Metadata.getMetadata(bullet, "gunname") != null) {
+			ItemStack gun = (ItemStack) Metadata.getMetadata(bullet, "gun");
 			double damage = (double) Metadata.getMetadata(bullet, "damage");
 			defender.damage(damage, (Entity)bullet.getShooter());
 			// DamageTick.removeDamageTick(defender);
 			double kb = (double) Metadata.getMetadata(bullet, "kb");
 			defender.setVelocity(defender.getVelocity().add(bullet.getVelocity().normalize().multiply(kb)));
+			if (bullet.getShooter() instanceof Player) {
+				Player shooter = (Player) bullet.getShooter();
+				Object[] args = {"hiteffect", defender};
+				redirectGun(shooter, gun, args);
+			}
 		} else {
 			return;
 		}

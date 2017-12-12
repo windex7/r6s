@@ -52,9 +52,6 @@ import plugin.R6S.api.Gun;
 import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
 import plugin.R6S.api.Timing;
-import plugin.R6S.customitem.Rifle;
-import plugin.R6S.customitem.Shotgun;
-import plugin.R6S.customitem.Sniper;
 
 public class SpecialItems implements Listener {
 	static Plugin r6s = R6SPlugin.getInstance();
@@ -139,16 +136,8 @@ public class SpecialItems implements Listener {
 
 		if (item != null) {
 			if (item.getItemMeta().getDisplayName() != null) {
-				switch (item.getItemMeta().getDisplayName()) {
-				case "Shotgun":
-					Shotgun.shoot(player, item, "trigger");
-					return;
-				case "Sniper":
-					Sniper.shoot(player, item, "trigger");
-					return;
-				case "Rifle":
-					Rifle.shoot(player, item, "trigger");
-				}
+				Object args[] = {"trigger"};
+				Gun.redirectGun(player, item, args);
 			}
 			if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
 				switch (item.getType().toString()) {

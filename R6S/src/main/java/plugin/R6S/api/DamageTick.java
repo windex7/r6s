@@ -6,7 +6,8 @@ import org.bukkit.entity.LivingEntity;
 
 public class DamageTick {
 	public static void removeDamageTick(LivingEntity entity) {
-		entity.setNoDamageTicks(0);
+		// entity.setNoDamageTicks(0);
+		entity.setMaximumNoDamageTicks(0);
 		return;
 	}
 

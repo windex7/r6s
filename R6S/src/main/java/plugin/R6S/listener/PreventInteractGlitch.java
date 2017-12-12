@@ -7,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
+import plugin.R6S.api.Gun;
+
 public class PreventInteractGlitch implements Listener {
 	@EventHandler
 	public static void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
@@ -16,10 +18,8 @@ public class PreventInteractGlitch implements Listener {
 			if (player.getInventory().getItemInMainHand() != null) {
 				ItemStack item = player.getInventory().getItemInMainHand();
 				if (item.getItemMeta().getDisplayName() != null) {
-					switch (item.getItemMeta().getDisplayName()) {
-					case "Shotgun":
-						// Shotgun.interact(player, target, item);
-					}
+					Object args[] = {"interact", target};
+					Gun.redirectGun(player, item, args);
 				}
 			}
 		}
