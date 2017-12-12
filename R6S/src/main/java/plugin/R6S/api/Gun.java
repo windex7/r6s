@@ -6,9 +6,18 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class Gun {
+
+	public static void redirectGun(Player shooter, ItemStack gun, String mode) {
+
+	}
+
+	public static void redirectGun(Player shooter, ItemStack gun, String mode, Player victim) {
+
+	}
 
 	public static Vector getAIM(Player player) {
 		Location aimloc = player.getEyeLocation();
