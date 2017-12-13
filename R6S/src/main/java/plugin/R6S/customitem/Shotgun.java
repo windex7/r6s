@@ -1,10 +1,10 @@
 package plugin.R6S.customitem;
 
 public class Shotgun extends SnowballGunTemplate {
-	{
+	public Shotgun() {
 		cooltime = 800; // ms
 		speed = 3;
-		damage = 4;
+		damage = 3;
 		kb = 0.1;
 		number = 9;
 		spread = 0.3;

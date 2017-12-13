@@ -4,7 +4,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.LivingEntity;
 
-public class DamageTick {
+public class Damage {
+	public static void entityDamage(LivingEntity damager, double damage, LivingEntity defender, boolean truevalue) {
+		if (truevalue) {
+			defender.damage(damage, damager);
+			return;
+		} else {
+			// ((net.minecraft.server.v1_9_R2.EntityLiving)defender).damageEntity((DamageSource)damager, (float)damage);
+			defender.damage(damage, damager);
+			return;
+		}
+	}
+
 	public static void removeDamageTick(LivingEntity entity) {
 		// entity.setNoDamageTicks(0);
 		entity.setMaximumNoDamageTicks(0);

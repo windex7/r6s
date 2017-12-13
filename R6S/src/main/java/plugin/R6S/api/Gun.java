@@ -1,7 +1,6 @@
 package plugin.R6S.api;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,11 +17,19 @@ public class Gun {
 	public static void redirectGun(Player player, ItemStack gun, Object[] args) {
 		switch (gun.getItemMeta().getDisplayName()) {
 		case "Shotgun":
-			Shotgun.shoot(player, gun, args);
+			Shotgun shotgun = new Shotgun();
+			shotgun.gun(player, gun, args);
+			return;
 		case "Sniper":
-			Sniper.shoot(player, gun, args);
+			Sniper sniper = new Sniper();
+			sniper.gun(player, gun, args);
+			return;
 		case "Rifle":
-			Rifle.shoot(player, gun, args);
+			Rifle rifle = new Rifle();
+			rifle.gun(player, gun, args);
+			return;
+		default:
+			return;
 		}
 	}
 
@@ -59,20 +66,39 @@ public class Gun {
 
 	public static void hitBullet(LivingEntity defender, Snowball bullet) {
 		if (Metadata.getMetadata(bullet, "gunname") != null) {
+			LivingEntity damager = (LivingEntity) bullet.getShooter();
 			ItemStack gun = (ItemStack) Metadata.getMetadata(bullet, "gun");
 			double damage = (double) Metadata.getMetadata(bullet, "damage");
-			defender.damage(damage, (Entity)bullet.getShooter());
-			// DamageTick.removeDamageTick(defender);
+			// defender.damage(damage, (Entity)bullet.getShooter());
+			if (defender instanceof Player && damager instanceof Player) {
+				Player attacker = (Player) damager;
+				Player victim = (Player) defender;
+				if (defender.getUniqueId() == damager.getUniqueId()) {
+					return; // prevent self-fire bug
+				}
+				String attackerteam = ScoreboardTeam.getPlayerTeam(attacker);
+				String victimteam = ScoreboardTeam.getPlayerTeam(victim);
+				if (victimteam.equals(attackerteam)) { // friendly fire
+					Object[] gundamage = {gun, damage};
+					punishFriendlyFire(attacker, victim, gundamage);
+					return;
+				}
+			}
+			Damage.entityDamage(damager, damage, defender, false);
 			double kb = (double) Metadata.getMetadata(bullet, "kb");
 			defender.setVelocity(defender.getVelocity().add(bullet.getVelocity().normalize().multiply(kb)));
 			if (bullet.getShooter() instanceof Player) {
-				Player shooter = (Player) bullet.getShooter();
+				Player shooter = (Player) damager;
 				Object[] args = {"hiteffect", defender};
 				redirectGun(shooter, gun, args);
 			}
 		} else {
 			return;
 		}
+	}
+
+	public static void punishFriendlyFire(Player attacker, Player victim, Object[] gundamage) {
+		return;
 	}
 
 	public static Vector getRandomVector() {

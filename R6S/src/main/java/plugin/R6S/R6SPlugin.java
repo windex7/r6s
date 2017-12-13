@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.minecraft.server.v1_9_R2.Item;
-import plugin.R6S.api.DamageTick;
+import plugin.R6S.api.Damage;
 import plugin.R6S.command.Dev;
 import plugin.R6S.command.R6S;
 import plugin.R6S.listener.ChangePlayerAttributes;
@@ -79,7 +79,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				DamageTick.removeDamageTickAllEntity();
+				Damage.removeDamageTickAllEntity();
 			}
 		}.runTaskTimer(instance, 1, 1);
 		//Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(instance, new Runnable() {

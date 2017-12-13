@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import plugin.R6S.api.DamageTick;
+import plugin.R6S.api.Damage;
 
 public class RemoveDamageTick implements Listener {
 	@EventHandler
@@ -17,7 +17,7 @@ public class RemoveDamageTick implements Listener {
 		//	return;
 		//}
 		if (event.getEntity() instanceof LivingEntity) {
-			DamageTick.removeDamageTick((LivingEntity) event.getEntity());
+			Damage.removeDamageTick((LivingEntity) event.getEntity());
 		}
 	}
 }

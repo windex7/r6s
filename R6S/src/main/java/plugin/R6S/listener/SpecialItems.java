@@ -38,7 +38,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -377,16 +376,10 @@ public class SpecialItems implements Listener {
 				Snowball bullet = (Snowball)event.getDamager();
 				if (Metadata.getMetadata((Entity)bullet, "gunname") != null) {
 					Gun.hitBullet(defender, bullet);
-					// DamageTick.removeDamageTick(defender);
 					event.setCancelled(true);
 				}
 			}
 		}
-	}
-
-	@EventHandler
-	public static void onProjectileHit(ProjectileHitEvent event) {
-
 	}
 
 	public static Vector getRandomVector() {
