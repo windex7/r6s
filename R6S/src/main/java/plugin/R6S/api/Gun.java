@@ -76,8 +76,8 @@ public class Gun {
 				if (defender.getUniqueId() == damager.getUniqueId()) {
 					return; // prevent self-fire bug
 				}
-				String attackerteam = ScoreboardTeam.getPlayerTeam(attacker);
-				String victimteam = ScoreboardTeam.getPlayerTeam(victim);
+				String attackerteam = Teaming.getPlayerTeam(attacker);
+				String victimteam = Teaming.getPlayerTeam(victim);
 				if (victimteam.equals(attackerteam)) { // friendly fire
 					Object[] gundamage = {gun, damage};
 					punishFriendlyFire(attacker, victim, gundamage);

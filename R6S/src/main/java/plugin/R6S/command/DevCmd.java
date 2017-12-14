@@ -18,7 +18,7 @@ import plugin.R6S.api.Base64Item;
 import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
 
-public class Dev implements CommandExecutor {
+public class DevCmd implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

@@ -17,4 +17,10 @@ public class BlockBreakEffect {
 		int dimension = ((CraftWorld) player.getWorld()).getHandle().dimension;
 		((CraftServer) player.getServer()).getHandle().sendPacketNearby((EntityHuman)player, block.getX(), block.getY(), block.getZ(), 120, dimension, packet);
 	}
+
+	public static void playBBEToAll(Location loc, int damage) {
+		for (Player player : loc.getWorld().getPlayers()) {
+			playBlockBreakEffect(loc, damage, player);
+		}
+	}
 }

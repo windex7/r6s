@@ -24,11 +24,13 @@ import org.bukkit.plugin.Plugin;
 import plugin.R6S.R6SPlugin;
 import plugin.R6S.api.Glowing;
 import plugin.R6S.api.Metadata;
-import plugin.R6S.api.ScoreboardTeam;
+import plugin.R6S.api.Teaming;
 
-public class R6S implements CommandExecutor{
+public class R6SCmd implements CommandExecutor{
 	static Plugin r6s = R6SPlugin.getInstance();
 	static HashMap<Location, Long> cameract = new HashMap<>();
+	static List<Player> queue = new ArrayList<Player>();
+	static int minstartnum = 2;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -38,10 +40,10 @@ public class R6S implements CommandExecutor{
 					// Metadata.setMetadata(target, "team", args[3]);
 					switch (args[3]) {
 					case "red":
-						ScoreboardTeam.registerPlayerTeam(target, "red");
+						Teaming.registerPlayerTeam(target, "red");
 						break;
 					case "blue":
-						ScoreboardTeam.registerPlayerTeam(target, "blue");
+						Teaming.registerPlayerTeam(target, "blue");
 						break;
 					default:
 						return false;
@@ -63,7 +65,7 @@ public class R6S implements CommandExecutor{
 								Player player = (Player)entity;
 								if (Metadata.getMetadata(player, "team") != null) {
 									// String team = Metadata.getMetadata(player, "team").toString();
-									String team = ScoreboardTeam.getPlayerTeam(player);
+									String team = Teaming.getPlayerTeam(player);
 									useSecurityCamera(player, team, Integer.parseInt(args[1]), Integer.parseInt(args[2]), location);
 									return true;
 								}
@@ -83,19 +85,24 @@ public class R6S implements CommandExecutor{
 							defaultdepth = Integer.parseInt(args[3]);
 						}
 					}
-					List<Player> playerlist = new ArrayList<Player>();
+					// List<Player> playerlist = new ArrayList<Player>();
 					for (Entity entity : cblock.getWorld().getNearbyEntities(location, defaultradius, defaultdepth, defaultradius)) {
 						if (entity instanceof Player) {
 							Player targetplayer = (Player) entity;
 							if (targetplayer.getGameMode() == GameMode.ADVENTURE || targetplayer.getGameMode() == GameMode.SURVIVAL) {
-								playerlist.add(targetplayer);
+								// playerlist.add(targetplayer);
+								queue.add(targetplayer);
 							}
 						}
 					}
-					// getTeamBalance
+					break;
+				default:
+					if (queue.size() >= minstartnum) {
 
-					return true;
+					}
+					break;
 				}
+				return true;
 			}
 		}
 		return false;
@@ -124,7 +131,7 @@ public class R6S implements CommandExecutor{
 				if (entity instanceof Player) {
 					Player target = (Player)entity;
 					if (target.getGameMode() == GameMode.CREATIVE || target.getGameMode() == GameMode.SPECTATOR) continue;
-					if (!(Objects.equals(ScoreboardTeam.getPlayerTeam(target), team))) {
+					if (!(Objects.equals(Teaming.getPlayerTeam(target), team))) {
 						checkTargetInCamera(target, y1, y2, duration);
 					}
 				}

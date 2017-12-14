@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import plugin.R6S.api.Gun;
-import plugin.R6S.api.ScoreboardTeam;
+import plugin.R6S.api.Teaming;
 
 public class PreventInteractGlitch implements Listener {
 	@EventHandler
@@ -21,7 +21,7 @@ public class PreventInteractGlitch implements Listener {
 				if (item.getItemMeta().getDisplayName() != null) {
 					if (target instanceof Player) {
 						Player victim = (Player) target;
-						if (ScoreboardTeam.getPlayerTeam(victim).equals(ScoreboardTeam.getPlayerTeam(player))) {
+						if (Teaming.getPlayerTeam(victim).equals(Teaming.getPlayerTeam(player))) {
 							Object[] gundamage = {item};
 							Gun.punishFriendlyFire(player, victim, gundamage);
 							event.setCancelled(true);

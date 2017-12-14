@@ -10,8 +10,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.minecraft.server.v1_9_R2.Item;
 import plugin.R6S.api.Damage;
-import plugin.R6S.command.Dev;
-import plugin.R6S.command.R6S;
+import plugin.R6S.command.DevCmd;
+import plugin.R6S.command.R6SCmd;
 import plugin.R6S.listener.ChangePlayerAttributes;
 import plugin.R6S.listener.ClickedCommandBlock;
 import plugin.R6S.listener.DisableOffhand;
@@ -54,8 +54,8 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				);
 
 		// register commands
-		getCommand("dev").setExecutor(new Dev());
-		getCommand("r6s").setExecutor(new R6S());
+		getCommand("dev").setExecutor(new DevCmd());
+		getCommand("r6s").setExecutor(new R6SCmd());
 
 		// modify the number of stack size of specified items
 		try {

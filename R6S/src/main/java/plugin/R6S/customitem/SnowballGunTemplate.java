@@ -18,9 +18,9 @@ public class SnowballGunTemplate {
 	long number;
 	double spread;
 	double recoil;
-	String firesound = "BLOCK_ANVIL_BREAK";
-	float volume;
-	float pitch;
+	String firesound = "block.note.bass";
+	float volume = 12;
+	float pitch = 1;
 	String soundmode = "world";
 
 	public void gun(Player player, ItemStack gun, Object[] args) {

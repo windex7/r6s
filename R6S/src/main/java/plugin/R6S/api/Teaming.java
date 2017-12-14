@@ -6,7 +6,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
-public class ScoreboardTeam {
+public class Teaming {
 	static ScoreboardManager manager = Bukkit.getScoreboardManager();
 	static Scoreboard board = manager.getMainScoreboard();
 
@@ -46,12 +46,12 @@ public class ScoreboardTeam {
 	public static void registerPlayerTeam(Player target, String team) {
 		switch (team) {
 		case "red":
-			ScoreboardTeam.removeEntry(target.getName(), blue);
-			ScoreboardTeam.addEntry(target.getName(), red);
+			Teaming.removeEntry(target.getName(), blue);
+			Teaming.addEntry(target.getName(), red);
 			break;
 		case "blue":
-			ScoreboardTeam.removeEntry(target.getName(), red);
-			ScoreboardTeam.addEntry(target.getName(), blue);
+			Teaming.removeEntry(target.getName(), red);
+			Teaming.addEntry(target.getName(), blue);
 			break;
 		}
 	}
