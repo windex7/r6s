@@ -7,11 +7,10 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class PlaySound {
-	public static void play(Location loc, Sound sound, float volume, float pitch, Object[] args) {
-		String mode = args[0].toString();
+	public static void play(Player player, Location loc, String soundname, float volume, float pitch, String mode) {
+		Sound sound = convertStringToSound(soundname);
 		switch (mode) {
 		case "player":
-			Player player = (Player) args[1];
 			player.playSound(loc, sound, volume, pitch);
 			return;
 		case "world":
