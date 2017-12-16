@@ -1,14 +1,6 @@
 package plugin.R6S.command;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -17,20 +9,18 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import plugin.R6S.R6SPlugin;
-import plugin.R6S.api.Glowing;
 import plugin.R6S.api.Metadata;
+import plugin.R6S.api.R6SCamera;
+import plugin.R6S.api.R6SGame;
 import plugin.R6S.api.Teaming;
+import plugin.R6S.api.Timing;
 
 public class R6SCmd implements CommandExecutor{
 	static Plugin r6s = R6SPlugin.getInstance();
-	static HashMap<Location, Long> cameract = new HashMap<>();
-	static List<Player> queue = new ArrayList<Player>();
-	static int minstartnum = 2;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -61,12 +51,12 @@ public class R6SCmd implements CommandExecutor{
 				for (Entity entity : cblock.getWorld().getNearbyEntities(location, 4, 4, 4)) {
 					if (entity instanceof Player) {
 						if (Metadata.getMetadata(entity, "stonebutton") != null) {
-							if (Calendar.getInstance().getTimeInMillis() - (long)Metadata.getMetadata(entity, "stonebutton") <= 2000) { // 2sec
+							long buttonpressed = (long)Metadata.getMetadata(entity, "stonebutton");
+							if (Timing.getTimeDiff(buttonpressed) <= 2000) { // 2sec
 								Player player = (Player)entity;
-								if (Metadata.getMetadata(player, "team") != null) {
-									// String team = Metadata.getMetadata(player, "team").toString();
+								if (Teaming.getPlayerTeam(player) != null) {
 									String team = Teaming.getPlayerTeam(player);
-									useSecurityCamera(player, team, Integer.parseInt(args[1]), Integer.parseInt(args[2]), location);
+									R6SCamera.useSecurityCamera(player, team, Integer.parseInt(args[1]), Integer.parseInt(args[2]), location);
 									return true;
 								}
 							}
@@ -91,68 +81,17 @@ public class R6SCmd implements CommandExecutor{
 							Player targetplayer = (Player) entity;
 							if (targetplayer.getGameMode() == GameMode.ADVENTURE || targetplayer.getGameMode() == GameMode.SURVIVAL) {
 								// playerlist.add(targetplayer);
-								queue.add(targetplayer);
+								R6SGame.addQueue(targetplayer);
 							}
 						}
 					}
 					break;
 				default:
-					if (queue.size() >= minstartnum) {
-
-					}
 					break;
 				}
 				return true;
 			}
 		}
 		return false;
-	}
-
-	public static void useSecurityCamera(Player player, String team, int y1, int y2, Location location) {
-		int duration = 300; // 15sec
-		if (StringUtils.isEmpty(team)) return;
-		if (!(player != null)) return;
-
-		long time = Calendar.getInstance().getTimeInMillis();
-		long cooltime = 30000; // 30sec
-		if (cameract.containsKey(location)) {
-			if (time - cameract.get(location) <= cooltime) {
-				long ctsec = (time - cameract.get(location)) / 1000;
-				player.sendMessage(ChatColor.DARK_RED + "this security camera is still in cooldown! try again in" + String.valueOf(ctsec) + "sec!");
-				return;
-			} // else { // do below
-			// }
-		} else {
-			cameract.put(location, time);
-		}
-
-		for (LivingEntity entity : player.getWorld().getLivingEntities()) {
-			if (entity != null) {
-				if (entity instanceof Player) {
-					Player target = (Player)entity;
-					if (target.getGameMode() == GameMode.CREATIVE || target.getGameMode() == GameMode.SPECTATOR) continue;
-					if (!(Objects.equals(Teaming.getPlayerTeam(target), team))) {
-						checkTargetInCamera(target, y1, y2, duration);
-					}
-				}
-			}
-		}
-	}
-
-	public static void checkTargetInCamera(Player player, int y1, int y2, int duration) {
-		if (duration <= 0) return;
-		int interval = 20; // duration(300) must be able to be devided by interval(20)
-		int remainlength = duration - interval;
-		double y = player.getLocation().getY();
-		if ((y1 >= y && y >= y2) || (y1 <= y && y <= y2)) {
-			Glowing.setPlayerGlowing(player, interval * 3);
-		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
-			@Override
-			public void run() {
-				checkTargetInCamera(player, y1, y2, remainlength);
-			}
-		}, interval);
-		return;
 	}
 }

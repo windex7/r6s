@@ -1,5 +1,5 @@
 package plugin.R6S.api;
 
-public class StageOfGame {
+public class R6SConfig {
 
 }

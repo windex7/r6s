@@ -7,7 +7,15 @@ import org.bukkit.entity.LivingEntity;
 public class Damage {
 	public static void entityDamage(LivingEntity damager, double damage, LivingEntity defender, boolean truevalue) {
 		if (truevalue) {
-			defender.damage(damage, damager);
+			// defender.damage(damage, damager);
+			double currenthealth = defender.getHealth();
+			if (currenthealth > damage) {
+				defender.damage(0, damager);
+				defender.setHealth(currenthealth - damage);
+			} else {
+				defender.damage(0, damager);
+				defender.setHealth(0);
+			}
 			return;
 		} else {
 			// ((net.minecraft.server.v1_9_R2.EntityLiving)defender).damageEntity((DamageSource)damager, (float)damage);
