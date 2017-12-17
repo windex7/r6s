@@ -22,9 +22,10 @@ public class DevCmd implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!(sender instanceof Player)) return false;
+		if (!(sender instanceof Player))
+			return false;
 		Plugin r6s = R6SPlugin.getInstance();
-		Player player = (Player)sender;
+		Player player = (Player) sender;
 		String playeruuid = player.getUniqueId().toString();
 		File playerconfig = new File(r6s.getDataFolder(), playeruuid + ".yml");
 		FileConfiguration playerdata = YamlConfiguration.loadConfiguration(playerconfig);
@@ -36,7 +37,8 @@ public class DevCmd implements CommandExecutor {
 			switch (args[0]) {
 			case "invsave":
 				try {
-					if (args.length <= 1) return false;
+					if (args.length <= 1)
+						return false;
 					if (args.length >= 3) {
 						// --specify filepath. args[1]:filename, args[2]:path--
 						File targetfile = new File(r6s.getDataFolder(), args[1] + ".yml");
@@ -55,40 +57,55 @@ public class DevCmd implements CommandExecutor {
 				break;
 			case "invload":
 				try {
-					if (args.length <= 1) return false;
+					if (args.length <= 1)
+						return false;
 					if (args.length >= 3) {
 						// --specify filepath. args[1]:filename, args[2]:path--
-						player.getInventory().setContents(Base64Item.itemFromStringList(YamlConfiguration.loadConfiguration(new File(r6s.getDataFolder(), args[1] + ".yml")).getString(args[2].toString())));
+						player.getInventory()
+								.setContents(Base64Item.itemFromStringList(YamlConfiguration
+										.loadConfiguration(new File(r6s.getDataFolder(), args[1] + ".yml"))
+										.getString(args[2].toString())));
 						return true;
 					}
 					// --load inv from devfile.yml\inv.arg[1]--
-					player.getInventory().setContents(Base64Item.itemFromStringList(devconfig.getString("inv." + args[1])));
+					player.getInventory()
+							.setContents(Base64Item.itemFromStringList(devconfig.getString("inv." + args[1])));
 					return true;
 				} catch (Exception e) {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not load from the target file.");
 				}
 				break;
 			case "readnbtstring":
-				if (args.length <= 1) return false;
-				player.sendMessage("key: " + args[1] + " , value: " + NBT.readItemTag(player.getInventory().getItemInMainHand(), args[1], "string"));
+				if (args.length <= 1)
+					return false;
+				player.sendMessage("key: " + args[1] + " , value: "
+						+ NBT.readItemTag(player.getInventory().getItemInMainHand(), args[1], "string"));
 				return true;
 			case "writenbtstring":
-				if (args.length <= 2) return false;
-				player.getInventory().setItemInMainHand(NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], args[2], "string"));
-				player.sendMessage("successfully wrote nbt to the item in your main hand! key: " + args[1] + " , value: " + args[2]);
+				if (args.length <= 2)
+					return false;
+				player.getInventory().setItemInMainHand(
+						NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], args[2], "string"));
+				player.sendMessage("successfully wrote nbt to the item in your main hand! key: " + args[1]
+						+ " , value: " + args[2]);
 				return true;
 			case "writenbtint":
-				if (args.length <= 2) return false;
-				player.getInventory().setItemInMainHand(NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], args[2], "int"));
-				player.sendMessage("successfully wrote nbt to the item in your main hand! key: " + args[1] + " , value: " + args[2]);
+				if (args.length <= 2)
+					return false;
+				player.getInventory().setItemInMainHand(
+						NBT.writeItemTag(player.getInventory().getItemInMainHand(), args[1], args[2], "int"));
+				player.sendMessage("successfully wrote nbt to the item in your main hand! key: " + args[1]
+						+ " , value: " + args[2]);
 				return true;
 			case "writemetadata":
-				if (args.length <= 3) return false;
+				if (args.length <= 3)
+					return false;
 				Player writetarget = r6s.getServer().getPlayer(args[1]);
 				Metadata.setMetadata(writetarget, args[2], args[3]);
 				return true;
 			case "readmetadata":
-				if (args.length <= 2) return false;
+				if (args.length <= 2)
+					return false;
 				Player readtarget = r6s.getServer().getPlayer(args[1]);
 				String value = Metadata.getMetadata(readtarget, args[2]).toString();
 				player.sendMessage("key: " + args[2] + ", value: " + value);
@@ -96,8 +113,8 @@ public class DevCmd implements CommandExecutor {
 			default:
 				return false;
 			}
-	}
-	return false;
+		}
+		return false;
 	}
 
 }

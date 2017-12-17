@@ -16,6 +16,15 @@ public class Config {
 	static File devfile = new File(r6s.getDataFolder(), "devfile.yml");
 	static FileConfiguration devconfig = YamlConfiguration.loadConfiguration(devfile);
 
+	public Config() {
+		r6s.saveConfig();
+		try {
+			devconfig.save(devfile);
+		} catch (IOException e) {
+			r6s.getLogger().info("could not save devfile!");
+		}
+	}
+
 	public static void setGameConfig(String key, Object data) {
 		config.set(key, data);
 		r6s.saveConfig();
@@ -56,11 +65,24 @@ public class Config {
 		return targetconfig.get(key);
 	}
 
+	public static void makeConfig(String configname) {
+		File configfile = new File(r6s.getDataFolder(), configname + ".yml");
+		if (!(configfile.exists())) {
+			configfile.getParentFile().mkdirs();
+			r6s.saveResource(configname, false);
+		}
+	}
+
 	public static File getPlayerFile(Player player) {
 		return new File(r6s.getDataFolder(), player.getUniqueId() + ".uml");
 	}
 
-	public static FileConfiguration getPlayerConfig(Player player) {
-		return YamlConfiguration.loadConfiguration(getPlayerFile(player));
+	public static void setPlayerConfig(Player player, String key, Object data) {
+
+	}
+
+	public static Object getPlayerConfig(Player player, String key) {
+		FileConfiguration playerconfig = YamlConfiguration.loadConfiguration(getPlayerFile(player));
+		return playerconfig.get(key);
 	}
 }
