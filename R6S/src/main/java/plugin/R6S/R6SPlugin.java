@@ -12,6 +12,7 @@ import net.minecraft.server.v1_9_R2.Item;
 import plugin.R6S.api.Config;
 import plugin.R6S.api.Damage;
 import plugin.R6S.api.R6SConfig;
+import plugin.R6S.api.ReleaseData;
 import plugin.R6S.api.Scoping;
 import plugin.R6S.api.Timing;
 import plugin.R6S.command.DevCmd;
@@ -46,6 +47,9 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 			getLogger().info("failed to create config file!");
 			e.printStackTrace();
 		}
+
+		// reset data
+		ReleaseData.onEnabled();
 
 		// register listners
 		registerEvents(

@@ -1,5 +1,7 @@
 package plugin.R6S.api;
 
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -10,14 +12,14 @@ public class Teaming {
 	static ScoreboardManager manager = Bukkit.getScoreboardManager();
 	static Scoreboard board = manager.getMainScoreboard();
 
-	final static String red = "Terrorist";
-	final static String blue = "CounterTerrorist";
-	final static String white = "FFA";
-	final static String defaultcolor = "nocollision";
-	final static Team redteam = board.getTeam(red);
-	final static Team blueteam = board.getTeam(blue);
-	final static Team whiteteam = board.getTeam(white);
-	final static Team defaultteam = board.getTeam(defaultcolor);
+	static String red = "Terrorist";
+	static String blue = "CounterTerrorist";
+	static String white = "FFA";
+	static String defaultcolor = "nocollision";
+	static Team redteam = board.getTeam(red);
+	static Team blueteam = board.getTeam(blue);
+	static Team whiteteam = board.getTeam(white);
+	static Team defaultteam = board.getTeam(defaultcolor);
 
 	public static String getTeamName(String color) {
 		switch (color) {
@@ -83,4 +85,31 @@ public class Teaming {
 			return null;
 		}
 	}
+
+	public static Set<String> getAllPlayerOnTeam(String team) {
+		if (board.getTeams().contains(board.getTeam(team))) {
+			return board.getTeam(team).getEntries();
+		} else {
+			return null;
+		}
+	}
+
+	public static int getNumberOfTeamMember(String team) {
+		if (board.getTeams().contains(board.getTeam(team))) {
+			return board.getTeam(team).getEntries().size();
+		} else {
+			return 0;
+		}
+	}
+
+	public static void resetAllPlayerTeams() {
+		Team[] targetteams = {redteam, blueteam, whiteteam};
+		for (Team team: targetteams) {
+			for (String entry : team.getEntries()) {
+				removeEntry(entry, team.getName());
+			}
+		}
+	}
+
+
 }
