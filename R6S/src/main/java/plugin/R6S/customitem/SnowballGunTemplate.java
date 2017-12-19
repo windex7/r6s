@@ -44,7 +44,7 @@ public class SnowballGunTemplate {
 				break;
 			}
 			setFired(shooter, gun);
-			setCTed(shooter, gun, cooltime);
+			// setCTed(shooter, gun, cooltime);
 			Gun.shootBullet(shooter, gun, speed, damage, isdamagetruevalue, kb, number, spread, recoil, gun.getItemMeta().getDisplayName());
 			playSound(shooter, shooter.getLocation(), soundmode);
 			break;
@@ -58,7 +58,7 @@ public class SnowballGunTemplate {
 				break;
 			}
 			setFired(shooter, gun);
-			setCTed(shooter, gun, cooltime);
+			// setCTed(shooter, gun, cooltime);
 			Gun.interact(shooter, gun, (LivingEntity) args[1], damage, number, isdamagetruevalue);
 			playSound(shooter, shooter.getLocation(), soundmode);
 			break;
@@ -104,19 +104,20 @@ public class SnowballGunTemplate {
 	}
 
 	public ItemStack fireBullet(ItemStack gun) {
+		ItemStack ctedgun = setCT(gun, cooltime);
 		long bulletnumber = getMagazineLeft(gun);
 		long leftbulletnumber = bulletnumber - 1;
 		if (bulletnumber > 0) {
-			return setMagazineLeft(gun, leftbulletnumber);
+			return setMagazineLeft(ctedgun, leftbulletnumber);
 		} else if (bulletnumber == 0) {
-			becomeEmpty(gun);
-			return reload(gun);
+			becomeEmpty(ctedgun);
+			return reload(ctedgun);
 		} else {
 			long leftmagazine = magazinesize - 1;
 			if (leftmagazine > 1) {
-				return setMagazineLeft(gun, leftmagazine);
+				return setMagazineLeft(ctedgun, leftmagazine);
 			} else {
-				return reload(gun);
+				return reload(ctedgun);
 			}
 		}
 	}
