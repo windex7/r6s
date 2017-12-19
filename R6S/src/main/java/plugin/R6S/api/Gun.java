@@ -14,22 +14,22 @@ import plugin.R6S.customitem.Sniper;
 
 public class Gun {
 
-	public static void redirectGun(Player player, ItemStack gun, Object[] args) {
+	public static boolean redirectGun(Player player, ItemStack gun, Object[] args) {
 		switch (gun.getItemMeta().getDisplayName()) {
 		case "Shotgun":
 			Shotgun shotgun = new Shotgun();
 			shotgun.gun(player, gun, args);
-			return;
+			return true;
 		case "Sniper":
 			Sniper sniper = new Sniper();
 			sniper.gun(player, gun, args);
-			return;
+			return true;
 		case "Rifle":
 			Rifle rifle = new Rifle();
 			rifle.gun(player, gun, args);
-			return;
+			return true;
 		default:
-			return;
+			return false;
 		}
 	}
 
@@ -39,14 +39,14 @@ public class Gun {
 		return aim;
 	}
 
-	public static void shootBullet(Player player, ItemStack gun, double speed, double damage, double kb, long number, double spread, double recoil, String gunname) {
+	public static void shootBullet(Player player, ItemStack gun, double speed, double damage, boolean isdamagetruevalue, double kb, long number, double spread, double recoil, String gunname) {
 		Vector aim = getAIM(player);
 		player.setVelocity(player.getVelocity().add(aim.clone().multiply(recoil * -1)));
-		shootBullet(player, gun, player.getEyeLocation(), aim, speed, damage, kb, number, spread, gunname);
+		shootBullet(player, gun, player.getEyeLocation(), aim, speed, damage, isdamagetruevalue, kb, number, spread, gunname);
 		return;
 	}
 
-	public static void shootBullet(Player shooter, ItemStack gun, Location loc, Vector direction, double speed, double damage, double kb, long number, double spread, String gunname) {
+	public static void shootBullet(Player shooter, ItemStack gun, Location loc, Vector direction, double speed, double damage, boolean isdamagetruevalue, double kb, long number, double spread, String gunname) {
 		for (int i = 0; i < number; i++) {
 			Vector directionclone = direction.clone();
 			Vector aim = directionclone.add(getRandomVector().multiply(spread)).normalize().multiply(speed);
@@ -58,10 +58,17 @@ public class Gun {
 			bullet.setShooter(shooter);
 			bullet.setVelocity(aim);
 			Metadata.setMetadata(bullet, "damage", damage);
+			Metadata.setMetadata(bullet, "isdamagetruevalue", isdamagetruevalue);
 			Metadata.setMetadata(bullet, "kb", kb);
 			Metadata.setMetadata(bullet, "gunname", gunname);
 			Metadata.setMetadata(bullet, "gun", gun);
 		}
+	}
+
+	public static void interact(Player shooter, ItemStack gun, LivingEntity target, double damage, long number, boolean isdamagetruevalue) {
+		Damage.entityDamage(shooter, damage * number, target, isdamagetruevalue);
+		// target.damage(damage * number, player);
+		return;
 	}
 
 	public static void hitBullet(LivingEntity defender, Snowball bullet) {
@@ -69,6 +76,7 @@ public class Gun {
 			LivingEntity damager = (LivingEntity) bullet.getShooter();
 			ItemStack gun = (ItemStack) Metadata.getMetadata(bullet, "gun");
 			double damage = (double) Metadata.getMetadata(bullet, "damage");
+			boolean isdamagetruevalue = (boolean) Metadata.getMetadata(bullet, "isdamagetruevalue");
 			// defender.damage(damage, (Entity)bullet.getShooter());
 			if (defender instanceof Player && damager instanceof Player) {
 				Player attacker = (Player) damager;
@@ -84,7 +92,7 @@ public class Gun {
 					return;
 				}
 			}
-			Damage.entityDamage(damager, damage, defender, false);
+			Damage.entityDamage(damager, damage, defender, isdamagetruevalue);
 			double kb = (double) Metadata.getMetadata(bullet, "kb");
 			defender.setVelocity(defender.getVelocity().add(bullet.getVelocity().normalize().multiply(kb)));
 			if (bullet.getShooter() instanceof Player) {

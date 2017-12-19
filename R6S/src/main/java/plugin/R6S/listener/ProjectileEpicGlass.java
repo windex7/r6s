@@ -3,11 +3,12 @@ package plugin.R6S.listener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -15,22 +16,26 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockIterator;
 
 import plugin.R6S.R6SPlugin;
+import plugin.R6S.api.EpicGlass;
 import plugin.R6S.api.Metadata;
 
 public class ProjectileEpicGlass implements Listener {
-	Plugin r6s = R6SPlugin.getInstance();
+	static Plugin r6s = R6SPlugin.getInstance();
 	public static ArrayList<Material> breakableblocks = new ArrayList<Material>(
 			Arrays.asList(Material.GLASS, Material.STAINED_GLASS, Material.STAINED_GLASS_PANE, Material.THIN_GLASS));
 
-	final int arrowblockdamage = 5;
-	final int snowballblockdamage = 3;
-	final int blockdurability = 20;
+	static int arrowblockdamage = 5;
+	static int snowballblockdamage = 3;
+	static int blockdurability = 20;
+
+	public static Integer getBlockDurability() {
+		return blockdurability;
+	}
 
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -68,26 +73,10 @@ public class ProjectileEpicGlass implements Listener {
 							continue;
 						} else {
 							if (hitblock.getType() == Material.TNT) {
-								hitblock.setType(Material.AIR);
-								Entity tnt = hitblock.getWorld().spawn(hitblock.getLocation(), TNTPrimed.class);
-								((TNTPrimed) tnt).setFuseTicks(20);
+								spawnPrimedTNT(hitblock);
 								continue;
 							}
-							if (hitblock.hasMetadata("damage")) {
-								for (MetadataValue meta : hitblock.getMetadata("damage")) {
-									hitblock.setMetadata("damage",
-											new FixedMetadataValue(r6s, meta.asInt() + arrowblockdamage));
-									if (meta.asInt() >= blockdurability) {
-										hitblock.removeMetadata("damage", r6s);
-										hitblock.setType(Material.AIR);
-										// arrow.remove();
-										// cloneArrow(arrow, shooter);
-									}
-									break;
-								}
-							} else {
-								hitblock.setMetadata("damage", new FixedMetadataValue(r6s, arrowblockdamage));
-							}
+							EpicGlass.addDamage(hitblock.getLocation(), arrowblockdamage);
 							arrow.remove();
 							break;
 						}
@@ -127,27 +116,10 @@ public class ProjectileEpicGlass implements Listener {
 							continue;
 						} else {
 							if (hitblock.getType() == Material.TNT) {
-								hitblock.setType(Material.AIR);
-								Entity tnt = hitblock.getWorld().spawn(hitblock.getLocation(), TNTPrimed.class);
-								((TNTPrimed) tnt).setFuseTicks(20);
+								spawnPrimedTNT(hitblock);
 								continue;
 							}
-							if (hitblock.hasMetadata("damage")) {
-								for (MetadataValue meta : hitblock.getMetadata("damage")) {
-									hitblock.setMetadata("damage",
-											new FixedMetadataValue(r6s, meta.asInt() + snowballblockdamage));
-									if (meta.asInt() >= blockdurability) {
-										hitblock.removeMetadata("damage", r6s);
-										hitblock.setType(Material.AIR);
-										// arrow.remove();
-										// cloneArrow(arrow, shooter);
-									}
-									break;
-								}
-							} else {
-								hitblock.setMetadata("damage", new FixedMetadataValue(r6s, snowballblockdamage));
-							}
-							// snowball.remove();
+							EpicGlass.addDamage(hitblock.getLocation(), snowballblockdamage);
 							break;
 						}
 					}
@@ -197,6 +169,22 @@ public class ProjectileEpicGlass implements Listener {
 			return true;
 		} else
 			return false;
+	}
+
+	public static void spawnPrimedTNT(Block hitblock) {
+		Location loc = hitblock.getLocation();
+		World world = hitblock.getWorld();
+		int fusetick = 10;
+		float power = 4;
+		hitblock.setType(Material.AIR);
+		TNTPrimed tnt = world.spawn(loc, TNTPrimed.class);
+		tnt.setFuseTicks(fusetick);
+		new BukkitRunnable() {
+			public void run() {
+				tnt.remove();
+				world.createExplosion(loc, power);
+			}
+		}.runTaskLater(r6s, fusetick);
 	}
 
 	public static void cloneArrow(Arrow arrow, Player shooter) {

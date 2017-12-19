@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import plugin.R6S.api.Gun;
 import plugin.R6S.api.NBT;
 
 public class PreventInventoryGlitch implements Listener {
@@ -49,8 +50,11 @@ public class PreventInventoryGlitch implements Listener {
 		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
 		if (item != null && item.getType() != Material.AIR) {
 			if (NBT.readItemTag(item, "bound", "string") != null) {
-				event.getItemDrop().remove();
-				player.getInventory().setItemInMainHand(item);
+				event.setCancelled(true);
+			}
+			if (item.equals(player.getInventory().getItemInMainHand())) {
+				event.setCancelled(true);
+				Gun.redirectGun(player, item, new Object[] {"reload"});
 			}
 		}
 	}

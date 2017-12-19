@@ -15,8 +15,12 @@ import org.bukkit.plugin.Plugin;
 
 import plugin.R6S.R6SPlugin;
 import plugin.R6S.api.Base64Item;
+import plugin.R6S.api.Config;
 import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
+import plugin.R6S.api.R6SConfig;
+import plugin.R6S.api.R6SStage;
+import plugin.R6S.listener.PreventCertainExplosion;
 
 public class DevCmd implements CommandExecutor {
 
@@ -109,6 +113,64 @@ public class DevCmd implements CommandExecutor {
 				Player readtarget = r6s.getServer().getPlayer(args[1]);
 				String value = Metadata.getMetadata(readtarget, args[2]).toString();
 				player.sendMessage("key: " + args[2] + ", value: " + value);
+				return true;
+			case "readconfig":
+				if (args.length <= 2) return false;
+				switch (args[1]) {
+				case "config":
+					String gameconfigdata = Config.getGameConfigData(args[2]).toString();
+					player.sendMessage("key: " + args[2] + ", value: " + gameconfigdata);
+					return true;
+				case "dev":
+				case "devfile":
+					String devconfigdata;
+					devconfigdata = Config.getDevConfigData(args[2]).toString();
+					player.sendMessage("key: " + args[2] + ", value: " + devconfigdata);
+					return true;
+				default:
+					String configdata;
+					configdata = Config.getConfig(args[1], args[2]).toString();
+					player.sendMessage("key: " + args[2] + ", value: " + configdata);
+					return true;
+				}
+			case "writeconfig":
+				if (args.length <= 3) return false;
+				switch (args[1]) {
+				case "config":
+					Config.setGameConfig(args[2], args[3]);
+					return true;
+				case "dev":
+				case "devfile":
+					Config.setDevConfig(args[2], args[3]);
+					return true;
+				default:
+					Config.setConfig(args[1], args[2], args[3]);
+					return true;
+				}
+			case "writelocconfig":
+				if (args.length <= 2) return false;
+				switch (args[1]) {
+				case "config":
+					Config.setGameConfig(args[2], player.getLocation());
+					return true;
+				case "dev":
+				case "devfile":
+					Config.setDevConfig(args[2], player.getLocation());
+					return true;
+				default:
+					Config.setConfig(args[1], args[2], player.getLocation());
+					return true;
+				}
+			case "regenstage":
+				R6SStage.pasteSchematic("stage", R6SConfig.getWaypoint("stage"));
+				return true;
+			case "reloadconfig":
+				R6SConfig.reload();
+				player.sendMessage("reloaded config data!");
+				return true;
+			case "preventexplosion":
+				if (args.length <= 1) return false;
+				PreventCertainExplosion.setExplosionDisabled(Boolean.valueOf(args[1]));
 				return true;
 			default:
 				return false;

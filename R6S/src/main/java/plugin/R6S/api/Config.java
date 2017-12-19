@@ -16,13 +16,10 @@ public class Config {
 	static File devfile = new File(r6s.getDataFolder(), "devfile.yml");
 	static FileConfiguration devconfig = YamlConfiguration.loadConfiguration(devfile);
 
-	public Config() {
+	public Config() throws IOException {
+		if (!(r6s.getDataFolder().exists())) r6s.getDataFolder().mkdirs();
 		r6s.saveConfig();
-		try {
-			devconfig.save(devfile);
-		} catch (IOException e) {
-			r6s.getLogger().info("could not save devfile!");
-		}
+		if (!(devfile.exists())) devfile.createNewFile();
 	}
 
 	public static void setGameConfig(String key, Object data) {
@@ -31,7 +28,11 @@ public class Config {
 	}
 
 	public static Object getGameConfigData(String key) {
-		return config.get(key);
+		if (config.get(key) != null) {
+			return config.get(key);
+		} else {
+			return null;
+		}
 	}
 
 	public static void setDevConfig(String key, Object data) {
@@ -39,50 +40,59 @@ public class Config {
 		try {
 			devconfig.save(devfile);
 		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 	}
 
 	public static Object getDevConfigData(String key) {
-		return devconfig.get(key);
+		return getConfig("devfile", key);
+	}
+
+	public static File getConfigFile(String configname) {
+		File configfile = new File(r6s.getDataFolder(), configname + ".yml");
+		if (!(configfile.exists()))
+			try {
+				configfile.createNewFile();
+			} catch (IOException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
+		return configfile;
 	}
 
 	public static void setConfig(String configname, String key, Object data) {
-		File targetfile = new File(r6s.getDataFolder(), configname + ".yml");
+		File targetfile = getConfigFile(configname);
 		FileConfiguration targetconfig = YamlConfiguration.loadConfiguration(targetfile);
 		targetconfig.set(key, data);
 		try {
 			targetconfig.save(targetfile);
 		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		return;
 	}
 
 	public static Object getConfig(String configname, String key) {
-		File targetfile = new File(r6s.getDataFolder(), configname + ".yml");
+		File targetfile = getConfigFile(configname);
 		FileConfiguration targetconfig = YamlConfiguration.loadConfiguration(targetfile);
-		return targetconfig.get(key);
-	}
-
-	public static void makeConfig(String configname) {
-		File configfile = new File(r6s.getDataFolder(), configname + ".yml");
-		if (!(configfile.exists())) {
-			configfile.getParentFile().mkdirs();
-			r6s.saveResource(configname, false);
+		if (targetconfig.get(key) != null) {
+			return targetconfig.get(key);
+		} else {
+			return null;
 		}
 	}
 
 	public static File getPlayerFile(Player player) {
-		return new File(r6s.getDataFolder(), player.getUniqueId() + ".uml");
+		return getConfigFile(player.getUniqueId().toString());
 	}
 
 	public static void setPlayerConfig(Player player, String key, Object data) {
-
+		setConfig(player.getUniqueId().toString(), key, data);
 	}
 
 	public static Object getPlayerConfig(Player player, String key) {
-		FileConfiguration playerconfig = YamlConfiguration.loadConfiguration(getPlayerFile(player));
-		return playerconfig.get(key);
+		return getConfig(player.getUniqueId().toString(), key);
 	}
 }

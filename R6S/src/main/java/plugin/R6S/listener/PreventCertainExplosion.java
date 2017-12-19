@@ -17,6 +17,10 @@ public class PreventCertainExplosion implements Listener {
 			Material.SNOW_BALL, Material.SNOW_BLOCK, Material.STAINED_CLAY, Material.PAINTING, Material.SEA_LANTERN,
 			Material.SNOW, Material.STONE_BUTTON, Material.BEDROCK, Material.COMMAND, Material.WATER));
 
+	public static void setExplosionDisabled(boolean isdisabled) {
+		disableexplosion = isdisabled;
+	}
+
 	@SuppressWarnings({ "rawtypes" })
 	@EventHandler
 	public static void onBlockExplode(BlockExplodeEvent event) {

@@ -4,10 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import plugin.R6S.R6SPlugin;
 
 public class R6SGame {
+	static Plugin r6s = R6SPlugin.getInstance();
 	static int minstartnum = 2;
+	static int waittillstart = 10; // sec
+	static int countdown = 10; // sec
 	static boolean isGameGoing = false;
+	static boolean isCountingDown = false;
 	static List<Player> queue = new ArrayList<Player>();
 	static List<Player> playerlist = new ArrayList<Player>();
 
@@ -21,7 +29,9 @@ public class R6SGame {
 	}
 
 	public static void removePlayerList(Player player) {
-		playerlist.remove(player);
+		if (isQueue(player)) {
+			playerlist.remove(player);
+		}
 		return;
 	}
 
@@ -36,10 +46,15 @@ public class R6SGame {
 
 	public static void addQueue(Player player) {
 		queue.add(player);
+		if (getNumberOfQueue() >= minstartnum && !(isCountingDown)) {
+			preStartGame();
+		}
 	}
 
 	public static void removeQueue(Player player) {
-		queue.remove(player);
+		if (isQueue(player)) {
+			queue.remove(player);
+		}
 	}
 
 	public static List<Player> getQueue() {
@@ -62,7 +77,38 @@ public class R6SGame {
 		Teaming.addEntry(player.getName(), team);
 	}
 
+	public static void preStartGame() {
+		isCountingDown = true;
+		countdown = waittillstart;
+		new BukkitRunnable() {
+			public void run() {
+				if (countdown > 0) {
+					countdown--;
+					r6s.getServer().broadcastMessage("the game starts in " + countdown + " sec!");
+					if (getNumberOfQueue() < minstartnum) {
+						cancelStartGame();
+						cancel();
+					}
+				} else if (countdown == 0) {
+					startGame();
+					cancel();
+				}
+			}
+		}.runTaskTimer(r6s, 20, 20);
+	}
+
+	public static void cancelStartGame() {
+		isCountingDown = false;
+		isGameGoing = false;
+	}
+
 	public static void startGame() {
+		isCountingDown = false;
+		isGameGoing = true;
+		clearQueue();
+	}
+
+	public static void onPlayerDie(Player player) {
 
 	}
 }

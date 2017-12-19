@@ -7,6 +7,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import plugin.R6S.api.R6SGame;
+
 public class ReleasePlayerData implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -17,7 +19,8 @@ public class ReleasePlayerData implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
-		releasePlayerData(player);
+		resetPlayerData(player);
+		R6SGame.onPlayerDie(player);
 	}
 
 	@EventHandler
@@ -27,14 +30,10 @@ public class ReleasePlayerData implements Listener {
 	}
 
 	public static void releasePlayerData(Player player) {
-		// cancel rapeling
+		R6SGame.removeQueue(player);
+	}
+
+	public static void resetPlayerData(Player player) {
 		Rapeling.setPlayerRapeling(player, false);
-		// setplayerrapeling(false) does these 4 metadata settings so comment-outed
-		// Metadata.setMetadata(player, "rapeling", false);
-		// Metadata.setMetadata(player, "decelerate", false);
-		// Metadata.setMetadata(player, "snapped", false);
-		// Metadata.setMetadata(player, "cancelrapeling", false);
-		// now there's no timer for rapeling
-		// Metadata.setMetadata(player, "rapelingtimer", Calendar.getInstance().getTimeInMillis());
 	}
 }

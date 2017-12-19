@@ -1,6 +1,6 @@
 package plugin.R6S;
 
-import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
@@ -9,7 +9,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.minecraft.server.v1_9_R2.Item;
+import plugin.R6S.api.Config;
 import plugin.R6S.api.Damage;
+import plugin.R6S.api.R6SConfig;
+import plugin.R6S.api.Scoping;
+import plugin.R6S.api.Timing;
 import plugin.R6S.command.DevCmd;
 import plugin.R6S.command.R6SCmd;
 import plugin.R6S.listener.ChangePlayerAttributes;
@@ -24,6 +28,7 @@ import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
 import plugin.R6S.listener.ReleasePlayerData;
 import plugin.R6S.listener.RemoveDamageTick;
+import plugin.R6S.listener.SneakScoping;
 import plugin.R6S.listener.SpecialItems;
 
 public class R6SPlugin extends JavaPlugin implements Listener {
@@ -34,7 +39,13 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		// check config files
-		checkFiles();
+		try {
+			new Config();
+			new R6SConfig();
+		} catch (IOException e) {
+			getLogger().info("failed to create config file!");
+			e.printStackTrace();
+		}
 
 		// register listners
 		registerEvents(
@@ -50,6 +61,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				new Rapeling(),
 				new ReleasePlayerData(),
 				new RemoveDamageTick(),
+				new SneakScoping(),
 				new SpecialItems()
 				);
 
@@ -75,11 +87,13 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 			e.printStackTrace();
 		}
 
-		// remove all entities' damage tick every tick
+		Timing.resetTick();
 		new BukkitRunnable() {
 			@Override
 			public void run() {
+				Timing.tick();
 				Damage.removeDamageTickAllEntity();
+				Scoping.checkAllPlayerScoping();
 			}
 		}.runTaskTimer(instance, 1, 1);
 		//Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(instance, new Runnable() {
@@ -101,28 +115,6 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 
 	public static R6SPlugin getInstance() {
 		return instance;
-	}
-
-	public void checkFiles() {
-		try {
-			if (!getDataFolder().exists()) {
-				getLogger().info("datafolder is not found, creating...");
-				getDataFolder().mkdirs();
-			}
-			if (!new File(getDataFolder(), "config.yml").exists()) {
-				getLogger().info("config.yml is not found, creating...");
-				saveDefaultConfig();
-			} else {
-				getLogger().info("config.yml is found, loading...");
-			}
-			File devfile = new File(getDataFolder(), "devfile.yml");
-			if (!devfile.exists()) {
-				getLogger().info("devfile.yml is not found, creating...");
-				devfile.createNewFile();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void registerEvents(Listener... listeners) {

@@ -25,7 +25,6 @@ public class Damage {
 	}
 
 	public static void removeDamageTick(LivingEntity entity) {
-		// entity.setNoDamageTicks(0);
 		entity.setMaximumNoDamageTicks(0);
 		return;
 	}

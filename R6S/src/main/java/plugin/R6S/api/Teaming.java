@@ -13,8 +13,11 @@ public class Teaming {
 	final static String red = "Terrorist";
 	final static String blue = "CounterTerrorist";
 	final static String white = "FFA";
+	final static String defaultcolor = "nocollision";
 	final static Team redteam = board.getTeam(red);
 	final static Team blueteam = board.getTeam(blue);
+	final static Team whiteteam = board.getTeam(white);
+	final static Team defaultteam = board.getTeam(defaultcolor);
 
 	public static String getTeamName(String color) {
 		switch (color) {
@@ -24,8 +27,9 @@ public class Teaming {
 			return blue;
 		case "white":
 			return white;
+		case "default":
 		default:
-			return null;
+			return defaultcolor;
 		}
 	}
 
@@ -44,25 +48,39 @@ public class Teaming {
 	}
 
 	public static void registerPlayerTeam(Player target, String team) {
+		String targetname = target.getName();
+		if (getPlayerTeam(target) != null) {
+			removeEntry(targetname, getPlayerTeam(target));
+		}
 		switch (team) {
 		case "red":
-			Teaming.removeEntry(target.getName(), blue);
-			Teaming.addEntry(target.getName(), red);
+			addEntry(targetname, red);
 			break;
 		case "blue":
-			Teaming.removeEntry(target.getName(), red);
-			Teaming.addEntry(target.getName(), blue);
+			addEntry(targetname, blue);
+			break;
+		case "white":
+			addEntry(targetname, white);
+			break;
+		case "default":
+		default:
+			addEntry(targetname, defaultcolor);
 			break;
 		}
 	}
 
 	public static String getPlayerTeam(Player target) {
-		if (redteam.hasEntry(target.getName())) {
+		String targetname = target.getName();
+		if (redteam.hasEntry(targetname)) {
 			return "red";
-		} else if (blueteam.hasEntry(target.getName())) {
+		} else if (blueteam.hasEntry(targetname)) {
 			return "blue";
-		} else {
+		} else if (whiteteam.hasEntry(targetname)){
 			return "white";
+		} else if (defaultteam.hasEntry(targetname)){
+			return "default";
+		} else {
+			return null;
 		}
 	}
 }
