@@ -51,9 +51,6 @@ public class PreventInventoryGlitch implements Listener {
 		if (item != null && item.getType() != Material.AIR) {
 			if (NBT.readItemTag(item, "bound", "string") != null) {
 				event.setCancelled(true);
-			}
-			if (item.equals(player.getInventory().getItemInMainHand())) {
-				event.setCancelled(true);
 				Gun.redirectGun(player, item, new Object[] {"reload"});
 			}
 		}

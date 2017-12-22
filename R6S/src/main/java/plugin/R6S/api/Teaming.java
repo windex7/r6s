@@ -1,21 +1,27 @@
 package plugin.R6S.api;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
+import plugin.R6S.R6SPlugin;
+
 public class Teaming {
+	static Plugin r6s = R6SPlugin.getInstance();
 	static ScoreboardManager manager = Bukkit.getScoreboardManager();
 	static Scoreboard board = manager.getMainScoreboard();
 
-	static String red = "Terrorist";
-	static String blue = "CounterTerrorist";
-	static String white = "FFA";
-	static String defaultcolor = "nocollision";
+	final static String red = "Terrorist";
+	final static String blue = "CounterTerrorist";
+	final static String white = "FFA";
+	final static String defaultcolor = "nocollision";
 	static Team redteam = board.getTeam(red);
 	static Team blueteam = board.getTeam(blue);
 	static Team whiteteam = board.getTeam(white);
@@ -51,20 +57,24 @@ public class Teaming {
 
 	public static void registerPlayerTeam(Player target, String team) {
 		String targetname = target.getName();
-		if (getPlayerTeam(target) != null) {
-			removeEntry(targetname, getPlayerTeam(target));
-		}
+		// if (getPlayerTeam(target) != null) {
+		// 	removeEntry(targetname, getPlayerTeam(target));
+		// }
 		switch (team) {
 		case "red":
+		case red:
 			addEntry(targetname, red);
 			break;
 		case "blue":
+		case blue:
 			addEntry(targetname, blue);
 			break;
 		case "white":
+		case white:
 			addEntry(targetname, white);
 			break;
 		case "default":
+		case defaultcolor:
 		default:
 			addEntry(targetname, defaultcolor);
 			break;
@@ -111,5 +121,46 @@ public class Teaming {
 		}
 	}
 
+	public static List<Player> shuffleList(List<Player> playerlist) {
+		List<Player> list = playerlist;
+		Collections.shuffle(list);
+		return list;
+	}
 
+	public static void teamingPlayer(Player player, String mode) {
+		switch (mode) {
+		case "normal":
+			int rednumber = getNumberOfTeamMember(red);
+			int bluenumber = getNumberOfTeamMember(blue);
+			if (rednumber > bluenumber) {
+				registerPlayerTeam(player, "blue");
+			} else if (bluenumber > rednumber) {
+				registerPlayerTeam(player, "red");
+			} else {
+				if (Math.random() < 0.5) {
+					registerPlayerTeam(player, "red");
+				} else {
+					registerPlayerTeam(player, "blue");
+				}
+			}
+			break;
+		default:
+			return;
+		}
+	}
+
+	public static void spawnTeamMember() {
+		for (String playername : getAllPlayerOnTeam(red)) {
+			Player player = r6s.getServer().getPlayer(playername);
+			if (player != null) {
+				player.teleport(R6SConfig.getSpawnpoint("red"));
+			}
+		}
+		for (String playername : getAllPlayerOnTeam(blue)) {
+			Player player = r6s.getServer().getPlayer(playername);
+			if (player != null) {
+				player.teleport(R6SConfig.getSpawnpoint("blue"));
+			}
+		}
+	}
 }

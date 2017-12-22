@@ -1,23 +1,29 @@
 package plugin.R6S.customitem;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import plugin.R6S.R6SPlugin;
 import plugin.R6S.api.Gun;
 import plugin.R6S.api.NBT;
 import plugin.R6S.api.PlaySound;
 import plugin.R6S.api.Timing;
 
 public class SnowballGunTemplate {
+	Plugin r6s = R6SPlugin.getInstance();
 	String ctkey = "ct";
 	long cooltime; // tick
+	String reloadkey = "isreloading";
 	long reloadtime;
 	String magazinekey = "remainbullet";
-	long magazinesize = 1;
+	short magazinesize = 1;
 	double speed;
 	double damage;
 	boolean isdamagetruevalue = false;
@@ -35,12 +41,15 @@ public class SnowballGunTemplate {
 	public void gun(Player shooter, ItemStack gun, Object[] args) {
 		switch (args[0].toString()) {
 		case "trigger":
-			if (isCT(gun)) {
-				// Message.sendMessage(shooter, "CT left: " + leftct);
-				break;
-			}
 			if (isEmpty(gun)) {
-				setReloaded(shooter, gun);
+				if (isReloading(gun)) {
+					break;
+				} else {
+					forceReloading(shooter, gun);
+					break;
+				}
+			}
+			if (isCT(gun)) {
 				break;
 			}
 			setFired(shooter, gun);
@@ -49,12 +58,15 @@ public class SnowballGunTemplate {
 			playSound(shooter, shooter.getLocation(), soundmode);
 			break;
 		case "interact":
-			if (isCT(gun)) {
-				// Message.sendMessage(shooter, "CT left: " + leftct);
-				break;
-			}
 			if (isEmpty(gun)) {
-				setReloaded(shooter, gun);
+				if (isReloading(gun)) {
+					break;
+				} else {
+					forceReloading(shooter, gun);
+					break;
+				}
+			}
+			if (isCT(gun)) {
 				break;
 			}
 			setFired(shooter, gun);
@@ -69,7 +81,7 @@ public class SnowballGunTemplate {
 			scope(shooter);
 			break;
 		case "reload":
-			setReloaded(shooter, gun);
+			forceReloading(shooter, gun);
 			break;
 		default:
 			return;
@@ -99,34 +111,39 @@ public class SnowballGunTemplate {
 	}
 
 	public void setFired(Player player, ItemStack gun) {
-		player.getInventory().setItemInMainHand(fireBullet(gun));
-		player.sendMessage(String.valueOf(NBT.readItemTag(gun, magazinekey, "long")));
+		player.getInventory().setItemInMainHand(fireBullet(player, gun));
+		player.sendMessage(String.valueOf(getMagazineLeft(gun)));
 	}
 
-	public ItemStack fireBullet(ItemStack gun) {
+	public ItemStack fireBullet(Player player, ItemStack gun) {
 		ItemStack ctedgun = setCT(gun, cooltime);
-		long bulletnumber = getMagazineLeft(gun);
-		long leftbulletnumber = bulletnumber - 1;
+		short bulletnumber = (short) getMagazineLeft(gun);
+		short leftbulletnumber = (short) (bulletnumber- 1);
 		if (bulletnumber > 0) {
 			return setMagazineLeft(ctedgun, leftbulletnumber);
 		} else if (bulletnumber == 0) {
 			becomeEmpty(ctedgun);
-			return reload(ctedgun);
+			return reload(player, ctedgun);
 		} else {
-			long leftmagazine = magazinesize - 1;
+			short leftmagazine = (short) (magazinesize - 1);
 			if (leftmagazine > 1) {
 				return setMagazineLeft(ctedgun, leftmagazine);
 			} else {
-				return reload(ctedgun);
+				return reload(player, ctedgun);
 			}
 		}
 	}
 
-	public ItemStack setMagazineLeft(ItemStack gun, long magazine) {
+	public ItemStack setMagazineLeft(ItemStack gun, short magazine) {
 		short maxdurability = gun.getType().getMaxDurability();
-		long durability = maxdurability * (magazine / magazinesize);
-		gun.setDurability((short)durability);
-		return NBT.writeItemTag(gun, magazinekey, magazine, "long");
+		short durability = (short)(maxdurability * (magazinesize - magazine) / magazinesize);
+		if (durability == maxdurability) {
+			durability = maxdurability--;
+			gun.setDurability((short)durability);
+		} else {
+			gun.setDurability((short)durability);
+		}
+		return NBT.writeItemTag(gun, magazinekey, (long) magazine, "long");
 	}
 
 	public long getMagazineLeft(ItemStack gun) {
@@ -137,24 +154,84 @@ public class SnowballGunTemplate {
 		}
 	}
 
-	public void setReloaded(Player player, ItemStack gun) {
-		player.getInventory().setItemInMainHand(reload(gun));
+	public void forceReloading(Player player, ItemStack gun) {
+		player.getInventory().setItemInMainHand(reload(player, gun));
 	}
 
 	public void becomeEmpty(ItemStack gun) {
 		gun.setDurability((short)1);
 	}
 
-	public ItemStack reload(ItemStack gun) {
+	public ItemStack reload(Player player, ItemStack gun) {
 		if (reloadtime == 0) {
-			return gun;
+			return setMagazineLeft(gun, magazinesize);
 		} else {
-			return setCT(gun, reloadtime);
+			charge(player, gun, reloadtime);
+			ItemStack setreloadinggun = setReloading(gun, true);
+			return setCT(setreloadinggun, reloadtime);
 		}
 	}
 
-	public void charge(Player player, ItemStack gun) {
+	public boolean isReloading(ItemStack gun) {
+		if (NBT.readItemTag(gun, reloadkey, "boolean") != null) {
+			boolean isreloading = (boolean) NBT.readItemTag(gun, reloadkey, "boolean");
+			if (isreloading) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 
+	public ItemStack setReloading(ItemStack gun, boolean isreloading) {
+		return NBT.writeItemTag(gun, reloadkey, isreloading, "boolean");
+	}
+
+	public void charge(Player player, ItemStack gun, long fullct) {
+		long triggeredtime = Timing.getTime();
+		new BukkitRunnable() {
+			public void run() {
+				ItemStack handitem = player.getInventory().getItemInMainHand();
+				if (handitem.getType().equals(gun.getType())) {
+					long leftct = (triggeredtime + fullct) - Timing.getTime();
+					if (leftct > 0) {
+						short maxdurability = handitem.getType().getMaxDurability();
+						short reloadprogress = (short)(maxdurability * leftct / fullct);
+						handitem.setDurability(reloadprogress);
+					} else if (leftct <= 0) {
+						handitem.setDurability((short)0);
+						ItemStack reloadedgun = setMagazineLeft(handitem, magazinesize);
+						ItemStack setreloadedgun = setReloading(reloadedgun, false);
+						player.getInventory().setItemInMainHand(setreloadedgun);
+						cancel();
+					}
+				} else {
+					for (int i = 0; i < 36; i++) {
+						ItemStack item = player.getInventory().getItem(i);
+						if (isReloading(item)) {
+							player.getInventory().setItem(i, setReloading(item, false));
+							player.updateInventory();
+						}
+					}
+					for (int i = 80; i <= 83; i++) {
+						ItemStack item = player.getInventory().getItem(i);
+						if (isReloading(item)) {
+							player.getInventory().setItem(i, setReloading(item, false));
+							player.updateInventory();
+						}
+					}
+					if (!(player.getItemOnCursor().getType().equals(Material.AIR))) {
+						if (isReloading(player.getItemOnCursor())) {
+							player.setItemOnCursor(setReloading(player.getItemOnCursor(), false));
+							player.updateInventory();
+						}
+					}
+					cancel();
+				}
+			}
+		}.runTaskTimer(this.r6s, 0, 1);
 	}
 
 	public void setCTed(Player player, ItemStack gun, long ct) {
@@ -175,6 +252,14 @@ public class SnowballGunTemplate {
 			return (long) NBT.readItemTag(gun, ctkey, "long");
 		} else {
 			return 0;
+		}
+	}
+
+	public long getRemainCT(ItemStack gun) {
+		if (getCT(gun) == 0 || !(isCT(gun))) {
+			return 0;
+		} else {
+			return -(Timing.getTimeDiff(getCT(gun)));
 		}
 	}
 

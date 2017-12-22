@@ -12,7 +12,7 @@ import plugin.R6S.R6SPlugin;
 public class R6SGame {
 	static Plugin r6s = R6SPlugin.getInstance();
 	static int minstartnum = 2;
-	static int waittillstart = 10; // sec
+	static int waittillstart = 20; // sec
 	static int countdown = 10; // sec
 	static boolean isGameGoing = false;
 	static boolean isCountingDown = false;
@@ -105,6 +105,11 @@ public class R6SGame {
 	public static void startGame() {
 		isCountingDown = false;
 		isGameGoing = true;
+		List<Player> playerlist = Teaming.shuffleList(queue);
+		for (Player player : playerlist) {
+			Teaming.teamingPlayer(player, "normal");
+		}
+		Teaming.spawnTeamMember();
 		clearQueue();
 	}
 
