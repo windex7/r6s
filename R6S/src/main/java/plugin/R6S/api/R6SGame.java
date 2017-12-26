@@ -19,6 +19,56 @@ public class R6SGame {
 	static List<Player> queue = new ArrayList<Player>();
 	static List<Player> playerlist = new ArrayList<Player>();
 
+	static String red = "Terrorist";
+	static String blue = "CounterTerrorist";
+	static String white = "FFA";
+	static String defaultcolor = "nocollision";
+
+	public static String getTeamName(String color) {
+		switch (color) {
+		case "red":
+			return red;
+		case "blue":
+			return blue;
+		case "white":
+			return white;
+		case "default":
+		default:
+			return defaultcolor;
+		}
+	}
+
+	static int round;
+	static int maxround = 3;
+	static List<Player> redalive = new ArrayList<Player>();
+	static List<Player> bluealive = new ArrayList<Player>();
+
+	public static void addAliveList(Player player, String team) {
+		switch (team) {
+		case "red":
+			if (!redalive.contains(player)) {
+				redalive.add(player);
+			}
+			break;
+		case "blue":
+			if (!bluealive.contains(player)) {
+				bluealive.add(player);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	public static void removeAliveList(Player player) {
+		if (redalive.contains(player)) {
+			redalive.remove(player);
+		}
+		if (bluealive.contains(player)) {
+			bluealive.remove(player);
+		}
+	}
+
 	public static List<Player> getPlayerList() {
 		return playerlist;
 	}
