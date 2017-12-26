@@ -1,5 +1,6 @@
 package plugin.R6S.api;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,11 @@ public class Teaming {
 	static Team whiteteam = board.getTeam(white);
 	static Team defaultteam = board.getTeam(defaultcolor);
 
+	static int round;
+	static int maxround = 3;
+	static List<Player> redalive = new ArrayList<Player>();
+	static List<Player> bluealive = new ArrayList<Player>();
+
 	public static String getTeamName(String color) {
 		switch (color) {
 		case "red":
@@ -38,6 +44,40 @@ public class Teaming {
 		case "default":
 		default:
 			return defaultcolor;
+		}
+	}
+
+	public static void addAliveList(Player player, String team) {
+		switch (team) {
+		case "red":
+			if (!redalive.contains(player)) {
+				redalive.add(player);
+			}
+			break;
+		case "blue":
+			if (!bluealive.contains(player)) {
+				bluealive.add(player);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	public static void removeAliveList(Player player) {
+		if (redalive.contains(player)) {
+			redalive.remove(player);
+		}
+		if (bluealive.contains(player)) {
+			bluealive.remove(player);
+		}
+	}
+
+	public static void checkAliveNumber() {
+		if (redalive.size() == 0) {
+
+		} else if (bluealive.size() == 0) {
+
 		}
 	}
 
@@ -53,6 +93,7 @@ public class Teaming {
 		if (targetteam.hasEntry(entry)) {
 			targetteam.removeEntry(entry);
 		}
+		removeAliveList(r6s.getServer().getPlayer(entry));
 	}
 
 	public static void registerPlayerTeam(Player target, String team) {

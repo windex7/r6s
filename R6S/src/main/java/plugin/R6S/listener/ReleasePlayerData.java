@@ -31,6 +31,7 @@ public class ReleasePlayerData implements Listener {
 
 	public static void releasePlayerData(Player player) {
 		R6SGame.removeQueue(player);
+		R6SGame.removePlayerList(player);
 	}
 
 	public static void resetPlayerData(Player player) {

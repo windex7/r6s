@@ -32,6 +32,7 @@ public class R6SGame {
 		if (isQueue(player)) {
 			playerlist.remove(player);
 		}
+		Teaming.removeEntry(player.getName(), Teaming.getPlayerTeam(player));
 		return;
 	}
 
@@ -114,6 +115,6 @@ public class R6SGame {
 	}
 
 	public static void onPlayerDie(Player player) {
-
+		Teaming.removeAliveList(player);
 	}
 }
