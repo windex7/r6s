@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,7 +16,7 @@ public class R6SGame {
 	static Plugin r6s = R6SPlugin.getInstance();
 	static int minstartnum = 2;
 	static int waittillstart = 20; // sec
-	static int countdown = 10; // sec
+	static int countdown;
 	static boolean isGameGoing = false;
 	static boolean isCountingDown = false;
 	static boolean isSwitched = false;
@@ -43,11 +44,11 @@ public class R6SGame {
 
 	static List<Player> redalive = new ArrayList<Player>();
 	static List<Player> bluealive = new ArrayList<Player>();
-	static int redpoint;
-	static int bluepoint;
+	static int redpoint = 0;
+	static int bluepoint = 0;
 	static int maxpoint = 2;
-	static int round;
-	static int maxround = 3;
+	static int round = 0;
+	static int maxround = 5;
 	static int switchteaminterval = maxpoint;
 
 	public static void addAliveList(Player player, String team) {
@@ -109,6 +110,7 @@ public class R6SGame {
 		default:
 			break;
 		}
+		r6s.getServer().broadcastMessage("redpoint: " + redpoint + ", bluepoint: " + bluepoint);
 		round++;
 		if (round >= maxround) {
 			endGame();
@@ -131,6 +133,7 @@ public class R6SGame {
 	}
 
 	public static void endGame() {
+		r6s.getServer().broadcastMessage("redpoint: " + redpoint + ", bluepoint: " + bluepoint);
 		String winteam;
 		if (redpoint > bluepoint) {
 			winteam = "red";
@@ -161,9 +164,16 @@ public class R6SGame {
 				break;
 			}
 		}
+		clearGameData();
+	}
+
+	public static void clearGameData() {
 		isGameGoing = false;
 		isCountingDown = false;
 		isSwitched = false;
+		round = 0;
+		redpoint = 0;
+		bluepoint = 0;
 		clearAliveList();
 		clearPlayerList();
 		clearQueue();
@@ -184,7 +194,7 @@ public class R6SGame {
 	}
 
 	public static void removePlayerList(Player player) {
-		if (isQueue(player)) {
+		if (isPlaying(player)) {
 			playerlist.remove(player);
 		}
 		Teaming.removeEntry(player.getName(), Teaming.getPlayerTeam(player));
@@ -294,11 +304,17 @@ public class R6SGame {
 		isCountingDown = false;
 		isGameGoing = true;
 		isSwitched = false;
+		round = 0;
+		redpoint = 0;
+		bluepoint = 0;
 		processQueue();
 		Teaming.spawnTeamMember(isSwitched);
+		r6s.getServer().broadcastMessage("Round: " + round);
 	}
 
-	public static void onPlayerDie(Player player) {
+	public static void onPlayerDie(Player player, Location deathloc) {
 		removeAliveList(player);
+		player.spigot().respawn();
+		player.teleport(deathloc);
 	}
 }

@@ -1,5 +1,7 @@
 package plugin.R6S.api;
 
+import java.util.Objects;
+
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -86,7 +88,7 @@ public class Gun {
 				}
 				String attackerteam = Teaming.getPlayerTeam(attacker);
 				String victimteam = Teaming.getPlayerTeam(victim);
-				if (victimteam.equals(attackerteam)) { // friendly fire
+				if (Objects.equals(victimteam, attackerteam)) { // friendly fire
 					Object[] gundamage = {gun, damage};
 					punishFriendlyFire(attacker, victim, gundamage);
 					return;

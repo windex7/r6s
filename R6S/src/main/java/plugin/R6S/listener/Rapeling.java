@@ -44,7 +44,7 @@ public class Rapeling implements Listener {
 					setPlayerRapeling(player, false);
 					return;
 				}
-				if (Metadata.getMetadata(player, "rapeling").equals(false)) {
+				if (Objects.equal(Metadata.getMetadata(player, "rapeling"),false)) {
 					if (Metadata.getMetadata(player, "decelerate").equals(true)) {
 						event.setCancelled(true);
 						return;

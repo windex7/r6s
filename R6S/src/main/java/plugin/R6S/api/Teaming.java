@@ -35,11 +35,13 @@ public class Teaming {
 	}
 
 	public static void removeEntry(String entry, String team) {
-		Team targetteam = board.getTeam(team);
-		if (targetteam.hasEntry(entry)) {
-			targetteam.removeEntry(entry);
+		if (team != null) {
+			Team targetteam = board.getTeam(team);
+			if (targetteam.hasEntry(entry)) {
+				targetteam.removeEntry(entry);
+			}
+			// R6SGame.removeAliveList(r6s.getServer().getPlayer(entry));
 		}
-		R6SGame.removeAliveList(r6s.getServer().getPlayer(entry));
 	}
 
 	public static void registerPlayerTeam(Player target, String team) {

@@ -1,5 +1,6 @@
 package plugin.R6S.listener;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +21,8 @@ public class ReleasePlayerData implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		resetPlayerData(player);
-		R6SGame.onPlayerDie(player);
+		Location deathloc = event.getEntity().getLocation();
+		R6SGame.onPlayerDie(player, deathloc);
 	}
 
 	@EventHandler
