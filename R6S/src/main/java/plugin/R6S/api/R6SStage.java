@@ -22,6 +22,10 @@ import plugin.R6S.R6SPlugin;
 public class R6SStage {
 	static Plugin r6s = R6SPlugin.getInstance();
 
+	public static void regenStage() {
+		R6SStage.pasteSchematic("stage", R6SConfig.getWaypoint("stage"));
+	}
+
 	public static void pasteSchematic(String schematicname, Location loc) {
 		WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		File schematic = new File(r6s.getDataFolder(), schematicname + ".schematic");

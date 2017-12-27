@@ -11,6 +11,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import plugin.R6S.R6SPlugin;
+import plugin.R6S.listener.PreventCertainExplosion;
 
 public class R6SGame {
 	static Plugin r6s = R6SPlugin.getInstance();
@@ -165,6 +166,8 @@ public class R6SGame {
 			}
 		}
 		clearGameData();
+		PreventCertainExplosion.setExplosionDisabled(true);
+		R6SStage.regenStage();
 	}
 
 	public static void clearGameData() {
@@ -256,6 +259,7 @@ public class R6SGame {
 			if (playerlist.contains(player)) {
 				r6s.getServer().getLogger().info("warning: " + player.getName() + " is already exists on playerlist!");
 			} else {
+				Inventory.saveInventory(player);
 				addPlayerList(player);
 			}
 		}
@@ -309,6 +313,8 @@ public class R6SGame {
 		bluepoint = 0;
 		processQueue();
 		Teaming.spawnTeamMember(isSwitched);
+		PreventCertainExplosion.setExplosionDisabled(false);
+		R6SStage.regenStage();
 		r6s.getServer().broadcastMessage("Round: " + round);
 	}
 
