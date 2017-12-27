@@ -1,7 +1,9 @@
 package plugin.R6S.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -16,6 +18,7 @@ public class R6SGame {
 	static int countdown = 10; // sec
 	static boolean isGameGoing = false;
 	static boolean isCountingDown = false;
+	static boolean isSwitched = false;
 	static List<Player> queue = new ArrayList<Player>();
 	static List<Player> playerlist = new ArrayList<Player>();
 
@@ -38,10 +41,14 @@ public class R6SGame {
 		}
 	}
 
-	static int round;
-	static int maxround = 3;
 	static List<Player> redalive = new ArrayList<Player>();
 	static List<Player> bluealive = new ArrayList<Player>();
+	static int redpoint;
+	static int bluepoint;
+	static int maxpoint = 2;
+	static int round;
+	static int maxround = 3;
+	static int switchteaminterval = maxpoint;
 
 	public static void addAliveList(Player player, String team) {
 		switch (team) {
@@ -67,10 +74,108 @@ public class R6SGame {
 		if (bluealive.contains(player)) {
 			bluealive.remove(player);
 		}
+		checkAliveNumber();
+	}
+
+	public static void clearAliveList() {
+		redalive.clear();
+		bluealive.clear();
+	}
+
+	public static void checkAliveNumber() {
+		if (redalive.size() == 0) {
+			endRound("blue");
+		} else if (bluealive.size() == 0) {
+			endRound("red");
+		}
+	}
+
+	public static void endRound(String team) {
+		switch (team) {
+		case "red":
+			redpoint++;
+			if (redpoint > maxpoint) {
+				endGame();
+				return;
+			}
+			break;
+		case "blue":
+			bluepoint++;
+			if (bluepoint > maxpoint) {
+				endGame();
+				return;
+			}
+			break;
+		default:
+			break;
+		}
+		round++;
+		if (round >= maxround) {
+			endGame();
+			return;
+		}
+		if (round % switchteaminterval == 0) {
+			switchTeamSpawn();
+		}
+		startRound();
+	}
+
+	public static void startRound() {
+		if (!isQueueEmpty()) {
+			processQueue();
+		}
+		for (Player player : getPlayerList()) {
+			player.sendMessage("Started Round: " + (round + 1));
+		}
+		Teaming.spawnTeamMember(isSwitched);
+	}
+
+	public static void endGame() {
+		String winteam;
+		if (redpoint > bluepoint) {
+			winteam = "red";
+		} else if (redpoint < bluepoint){
+			winteam = "blue";
+		} else {
+			winteam = "draw";
+		}
+		for (Player player : getPlayerList()) {
+			switch (winteam) {
+			case "red":
+				if (Teaming.getPlayerTeam(player).equals("red")) {
+					player.sendMessage("You Win!!!");
+				} else {
+					player.sendMessage("You Lose...");
+				}
+				break;
+			case "blue":
+				if (Teaming.getPlayerTeam(player).equals("blue")) {
+					player.sendMessage("You Win!!!");
+				} else {
+					player.sendMessage("You Lose...");
+				}
+				break;
+			case "draw":
+			default:
+				player.sendMessage("Draw!");
+				break;
+			}
+		}
+		isGameGoing = false;
+		isCountingDown = false;
+		isSwitched = false;
+		clearAliveList();
+		clearPlayerList();
+		clearQueue();
+		Teaming.resetAllPlayerTeams();
 	}
 
 	public static List<Player> getPlayerList() {
 		return playerlist;
+	}
+
+	public static void switchTeamSpawn() {
+		isSwitched = !isSwitched;
 	}
 
 	public static void addPlayerList(Player player) {
@@ -88,6 +193,10 @@ public class R6SGame {
 
 	public static boolean isPlaying(Player player) {
 		return playerlist.contains(player);
+	}
+
+	public static void shufflePlayerList() {
+		Collections.shuffle(playerlist);
 	}
 
 	public static void clearPlayerList() {
@@ -120,8 +229,33 @@ public class R6SGame {
 		return queue.contains(player);
 	}
 
+	public static boolean isQueueEmpty() {
+		if (queue.size() > 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	public static int getNumberOfQueue() {
 		return queue.size();
+	}
+
+	public static void processQueue() {
+		for (Player player : queue) {
+			if (playerlist.contains(player)) {
+				r6s.getServer().getLogger().info("warning: " + player.getName() + " is already exists on playerlist!");
+			} else {
+				addPlayerList(player);
+			}
+		}
+		shufflePlayerList();
+		for (Player player : playerlist) {
+			if (Objects.equals(Teaming.getPlayerTeam(player), "default") || Objects.equals(Teaming.getPlayerTeam(player), null)) {
+				Teaming.teamingPlayer(player, "normal");
+			}
+		}
+		clearQueue();
 	}
 
 	public static void joinTeam(Player player, String team) {
@@ -129,6 +263,9 @@ public class R6SGame {
 	}
 
 	public static void preStartGame() {
+		if (isGameGoing) {
+			return;
+		}
 		isCountingDown = true;
 		countdown = waittillstart;
 		new BukkitRunnable() {
@@ -156,15 +293,12 @@ public class R6SGame {
 	public static void startGame() {
 		isCountingDown = false;
 		isGameGoing = true;
-		List<Player> playerlist = Teaming.shuffleList(queue);
-		for (Player player : playerlist) {
-			Teaming.teamingPlayer(player, "normal");
-		}
-		Teaming.spawnTeamMember();
-		clearQueue();
+		isSwitched = false;
+		processQueue();
+		Teaming.spawnTeamMember(isSwitched);
 	}
 
 	public static void onPlayerDie(Player player) {
-		Teaming.removeAliveList(player);
+		removeAliveList(player);
 	}
 }

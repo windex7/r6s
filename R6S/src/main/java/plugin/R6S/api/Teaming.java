@@ -1,6 +1,5 @@
 package plugin.R6S.api;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,59 +27,6 @@ public class Teaming {
 	static Team whiteteam = board.getTeam(white);
 	static Team defaultteam = board.getTeam(defaultcolor);
 
-	static int round;
-	static int maxround = 3;
-	static List<Player> redalive = new ArrayList<Player>();
-	static List<Player> bluealive = new ArrayList<Player>();
-
-	public static String getTeamName(String color) {
-		switch (color) {
-		case "red":
-			return red;
-		case "blue":
-			return blue;
-		case "white":
-			return white;
-		case "default":
-		default:
-			return defaultcolor;
-		}
-	}
-
-	public static void addAliveList(Player player, String team) {
-		switch (team) {
-		case "red":
-			if (!redalive.contains(player)) {
-				redalive.add(player);
-			}
-			break;
-		case "blue":
-			if (!bluealive.contains(player)) {
-				bluealive.add(player);
-			}
-			break;
-		default:
-			break;
-		}
-	}
-
-	public static void removeAliveList(Player player) {
-		if (redalive.contains(player)) {
-			redalive.remove(player);
-		}
-		if (bluealive.contains(player)) {
-			bluealive.remove(player);
-		}
-	}
-
-	public static void checkAliveNumber() {
-		if (redalive.size() == 0) {
-
-		} else if (bluealive.size() == 0) {
-
-		}
-	}
-
 	public static void addEntry(String entry, String team) {
 		Team targetteam = board.getTeam(team);
 		if (!(targetteam.hasEntry(entry))) {
@@ -93,7 +39,7 @@ public class Teaming {
 		if (targetteam.hasEntry(entry)) {
 			targetteam.removeEntry(entry);
 		}
-		removeAliveList(r6s.getServer().getPlayer(entry));
+		R6SGame.removeAliveList(r6s.getServer().getPlayer(entry));
 	}
 
 	public static void registerPlayerTeam(Player target, String team) {
@@ -101,6 +47,11 @@ public class Teaming {
 		// if (getPlayerTeam(target) != null) {
 		// 	removeEntry(targetname, getPlayerTeam(target));
 		// }
+		if (board.getTeams().contains(board.getTeam(team))) {
+			addEntry(targetname, team);
+			return;
+		}
+		// legacy code :
 		switch (team) {
 		case "red":
 		case red:
@@ -190,17 +141,28 @@ public class Teaming {
 		}
 	}
 
-	public static void spawnTeamMember() {
+	public static void spawnTeamMember(boolean isSwitched) {
+		R6SGame.clearAliveList();
 		for (String playername : getAllPlayerOnTeam(red)) {
 			Player player = r6s.getServer().getPlayer(playername);
 			if (player != null) {
-				player.teleport(R6SConfig.getSpawnpoint("red"));
+				R6SGame.addAliveList(player, "red");
+				if (isSwitched) {
+					player.teleport(R6SConfig.getSpawnpoint("blue"));
+				} else {
+					player.teleport(R6SConfig.getSpawnpoint("red"));
+				}
 			}
 		}
 		for (String playername : getAllPlayerOnTeam(blue)) {
 			Player player = r6s.getServer().getPlayer(playername);
 			if (player != null) {
-				player.teleport(R6SConfig.getSpawnpoint("blue"));
+				R6SGame.addAliveList(player, "blue");
+				if (isSwitched) {
+					player.teleport(R6SConfig.getSpawnpoint("red"));
+				} else {
+					player.teleport(R6SConfig.getSpawnpoint("blue"));
+				}
 			}
 		}
 	}
