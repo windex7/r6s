@@ -39,6 +39,7 @@ public class SnowballGunTemplate {
 	String soundmode = "world";
 
 	public void gun(Player shooter, ItemStack gun, Object[] args) {
+		if (!(args != null)) return;
 		switch (args[0].toString()) {
 		case "trigger":
 			if (isEmpty(gun)) {

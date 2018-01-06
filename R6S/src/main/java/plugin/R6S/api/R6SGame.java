@@ -79,6 +79,16 @@ public class R6SGame {
 		checkAliveNumber();
 	}
 
+	public static boolean isAliveList(Player player) {
+		if (redalive.contains(player)) {
+			return true;
+		} else if (bluealive.contains(player)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public static void clearAliveList() {
 		redalive.clear();
 		bluealive.clear();
@@ -144,6 +154,7 @@ public class R6SGame {
 			winteam = "draw";
 		}
 		for (Player player : getPlayerList()) {
+			PlayerInv.loadInventory(player, "player", "inventory");
 			switch (winteam) {
 			case "red":
 				if (Teaming.getPlayerTeam(player).equals("red")) {
@@ -189,6 +200,7 @@ public class R6SGame {
 
 	public static void switchTeamSpawn() {
 		isSwitched = !isSwitched;
+		R6SStage.regenStage();
 	}
 
 	public static void addPlayerList(Player player) {
@@ -259,7 +271,7 @@ public class R6SGame {
 			if (playerlist.contains(player)) {
 				r6s.getServer().getLogger().info("warning: " + player.getName() + " is already exists on playerlist!");
 			} else {
-				Inventory.saveInventory(player);
+				PlayerInv.saveInventory(player, "player", "inventory");
 				addPlayerList(player);
 			}
 		}
@@ -319,8 +331,14 @@ public class R6SGame {
 	}
 
 	public static void onPlayerDie(Player player, Location deathloc) {
-		removeAliveList(player);
 		player.spigot().respawn();
-		player.teleport(deathloc);
+		if (playerlist.contains(player)) {
+			if (isAliveList(player)) {
+				removeAliveList(player);
+				if (deathloc.getBlockY() > 0) {
+					player.teleport(deathloc);
+				}
+			}
+		}
 	}
 }

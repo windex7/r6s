@@ -49,9 +49,11 @@ public class PreventInventoryGlitch implements Listener {
 		ItemStack item = event.getItemDrop().getItemStack();
 		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
 		if (item != null && item.getType() != Material.AIR) {
-			if (NBT.readItemTag(item, "bound", "string") != null) {
-				event.setCancelled(true);
-				Gun.redirectGun(player, item, new Object[] {"reload"});
+			if (NBT.readItemTag(item, "gun", "string") != null) {
+				if (Gun.redirectGun(player, item, null)) {
+					event.getItemDrop().remove();
+					Gun.redirectGun(player, item, new Object[] {"reload"});
+				}
 			}
 		}
 	}

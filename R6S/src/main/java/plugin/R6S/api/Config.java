@@ -11,10 +11,10 @@ import org.bukkit.plugin.Plugin;
 import plugin.R6S.R6SPlugin;
 
 public class Config {
-	static Plugin r6s = R6SPlugin.getInstance();
-	static FileConfiguration config = r6s.getConfig();
-	static File devfile = new File(r6s.getDataFolder(), "devfile.yml");
-	static FileConfiguration devconfig = YamlConfiguration.loadConfiguration(devfile);
+	private static Plugin r6s = R6SPlugin.getInstance();
+	private static FileConfiguration config = r6s.getConfig();
+	private static File devfile = new File(r6s.getDataFolder(), "devfile.yml");
+	private static FileConfiguration devconfig = YamlConfiguration.loadConfiguration(devfile);
 
 	public Config() throws IOException {
 		if (!(r6s.getDataFolder().exists())) r6s.getDataFolder().mkdirs();
@@ -40,7 +40,6 @@ public class Config {
 		try {
 			devconfig.save(devfile);
 		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 	}
@@ -55,7 +54,6 @@ public class Config {
 			try {
 				configfile.createNewFile();
 			} catch (IOException e) {
-				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
 			}
 		return configfile;
@@ -68,7 +66,6 @@ public class Config {
 		try {
 			targetconfig.save(targetfile);
 		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		return;
