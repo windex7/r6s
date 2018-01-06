@@ -8,7 +8,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import plugin.R6S.api.PlayerInv;
+import plugin.R6S.api.InventoryIO;
 import plugin.R6S.api.R6SGame;
 
 public class ReleasePlayerData implements Listener {
@@ -30,7 +30,7 @@ public class ReleasePlayerData implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		if (R6SGame.isPlaying(player)) {
-			PlayerInv.loadInventory(player, "player", "inventory");
+			InventoryIO.loadInventory(player, "player", "inventory");
 		}
 		releasePlayerData(player);
 	}

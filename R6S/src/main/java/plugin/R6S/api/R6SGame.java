@@ -154,7 +154,7 @@ public class R6SGame {
 			winteam = "draw";
 		}
 		for (Player player : getPlayerList()) {
-			PlayerInv.loadInventory(player, "player", "inventory");
+			InventoryIO.loadInventory(player, "player", "inventory");
 			switch (winteam) {
 			case "red":
 				if (Teaming.getPlayerTeam(player).equals("red")) {
@@ -271,7 +271,7 @@ public class R6SGame {
 			if (playerlist.contains(player)) {
 				r6s.getServer().getLogger().info("warning: " + player.getName() + " is already exists on playerlist!");
 			} else {
-				PlayerInv.saveInventory(player, "player", "inventory");
+				InventoryIO.saveInventory(player, "player", "inventory");
 				addPlayerList(player);
 			}
 		}

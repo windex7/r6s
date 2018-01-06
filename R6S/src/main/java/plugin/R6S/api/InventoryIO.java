@@ -3,7 +3,7 @@ package plugin.R6S.api;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class PlayerInv {
+public class InventoryIO {
 	public static void saveInventory(Player player, String filename, String key) {
 		ItemStack[] items = player.getInventory().getContents();
 		String itemsstring = Base64Item.itemToStringList(items);
