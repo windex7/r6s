@@ -30,7 +30,7 @@ public class ReleasePlayerData implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		if (R6SGame.isPlaying(player)) {
-			InventoryIO.loadInventory(player, "player", "inventory");
+			InventoryIO.rollbackPlayerInventory(player);
 		}
 		releasePlayerData(player);
 	}

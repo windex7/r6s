@@ -14,8 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import plugin.R6S.R6SPlugin;
-import plugin.R6S.api.Base64Item;
 import plugin.R6S.api.Config;
+import plugin.R6S.api.InventoryIO;
 import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
 import plugin.R6S.api.R6SConfig;
@@ -45,16 +45,17 @@ public class DevCmd implements CommandExecutor {
 						return false;
 					if (args.length >= 3) {
 						// --specify filepath. args[1]:filename, args[2]:path--
-						File targetfile = new File(r6s.getDataFolder(), args[1] + ".yml");
-						FileConfiguration targetconfig = YamlConfiguration.loadConfiguration(targetfile);
-						targetconfig.set(args[2].toString(), Base64Item.itemToStringList(invcontents));
-						targetconfig.save(targetfile);
+						//File targetfile = new File(r6s.getDataFolder(), args[1] + ".yml");
+						//FileConfiguration targetconfig = YamlConfiguration.loadConfiguration(targetfile);
+						//targetconfig.set(args[2].toString(), Base64Item.itemToStringList(invcontents));
+						//targetconfig.save(targetfile);
+						InventoryIO.savePlayerInventory(player, args[1], args[2]);
 						return true;
 					}
 					// --save inv to devfile.yml\inv.arg[1]--
-					devconfig.set("inv." + args[1], Base64Item.itemToStringList(invcontents));
-					devconfig.save(devfile);
-					return true;
+					//devconfig.set("inv." + args[1], Base64Item.itemToStringList(invcontents));
+					//devconfig.save(devfile);
+					return false;
 				} catch (Exception e) {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not save to the target file.");
 				}
@@ -65,16 +66,18 @@ public class DevCmd implements CommandExecutor {
 						return false;
 					if (args.length >= 3) {
 						// --specify filepath. args[1]:filename, args[2]:path--
-						player.getInventory()
-								.setContents(Base64Item.itemFromStringList(YamlConfiguration
-										.loadConfiguration(new File(r6s.getDataFolder(), args[1] + ".yml"))
-										.getString(args[2].toString())));
+						//player.getInventory()
+						//		.setContents(Base64Item.itemFromStringList(YamlConfiguration
+						//				.loadConfiguration(new File(r6s.getDataFolder(), args[1] + ".yml"))
+						//				.getString(args[2].toString())));
+						InventoryIO.loadPlayerInventory(player, args[1], args[2]);
 						return true;
 					}
 					// --load inv from devfile.yml\inv.arg[1]--
-					player.getInventory()
-							.setContents(Base64Item.itemFromStringList(devconfig.getString("inv." + args[1])));
-					return true;
+					//player.getInventory()
+					//		.setContents(Base64Item.itemFromStringList(devconfig.getString("inv." + args[1])));
+					//return true;
+					return false;
 				} catch (Exception e) {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not load from the target file.");
 				}

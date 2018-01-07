@@ -23,7 +23,7 @@ import plugin.R6S.listener.DisableOffhand;
 import plugin.R6S.listener.PreventCertainExplosion;
 import plugin.R6S.listener.PreventHangingGlitch;
 import plugin.R6S.listener.PreventInteractGlitch;
-import plugin.R6S.listener.PreventInventoryGlitch;
+import plugin.R6S.listener.InventoryListener;
 import plugin.R6S.listener.PreventPlayerBreakBlock;
 import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
@@ -59,7 +59,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				new PreventCertainExplosion(),
 				new PreventHangingGlitch(),
 				new PreventInteractGlitch(),
-				new PreventInventoryGlitch(),
+				new InventoryListener(),
 				new PreventPlayerBreakBlock(),
 				new ProjectileEpicGlass(),
 				new Rapeling(),

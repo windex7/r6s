@@ -154,7 +154,8 @@ public class R6SGame {
 			winteam = "draw";
 		}
 		for (Player player : getPlayerList()) {
-			InventoryIO.loadInventory(player, "player", "inventory");
+			player.teleport(R6SConfig.getSpawnpoint("spec"));
+			InventoryIO.rollbackPlayerInventory(player);
 			switch (winteam) {
 			case "red":
 				if (Teaming.getPlayerTeam(player).equals("red")) {
@@ -271,7 +272,7 @@ public class R6SGame {
 			if (playerlist.contains(player)) {
 				r6s.getServer().getLogger().info("warning: " + player.getName() + " is already exists on playerlist!");
 			} else {
-				InventoryIO.saveInventory(player, "player", "inventory");
+				InventoryIO.backupPlayerInventory(player);
 				addPlayerList(player);
 			}
 		}
@@ -339,6 +340,19 @@ public class R6SGame {
 					player.teleport(deathloc);
 				}
 			}
+		}
+	}
+
+	public static void applyKit(Player player, String kit, String team) {
+		String period = ".";
+		String configname = "config";
+		String kitstring = "kit";
+		switch (kit) {
+		case "default":
+			InventoryIO.loadPlayerInventory(player, configname, kitstring + period + kit + period + team);
+			break;
+		default:
+			break;
 		}
 	}
 }

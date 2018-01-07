@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import plugin.R6S.api.Gun;
 import plugin.R6S.api.NBT;
 
-public class PreventInventoryGlitch implements Listener {
+public class InventoryListener implements Listener {
 	@EventHandler
 	public void onInvInteract(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();

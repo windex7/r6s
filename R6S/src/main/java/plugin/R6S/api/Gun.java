@@ -17,6 +17,7 @@ import plugin.R6S.customitem.Sniper;
 public class Gun {
 
 	public static boolean redirectGun(Player player, ItemStack gun, Object[] args) {
+		if (Objects.equals(gun.getItemMeta().getDisplayName(), null)) return false;
 		switch (gun.getItemMeta().getDisplayName()) {
 		case "Shotgun":
 			Shotgun shotgun = new Shotgun();
