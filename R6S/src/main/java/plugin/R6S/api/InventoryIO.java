@@ -66,4 +66,9 @@ public class InventoryIO {
 		player.openInventory(inv);
 		return;
 	}
+
+	public static void openInventory(Player player, Inventory inv) {
+		player.openInventory(inv);
+		return;
+	}
 }

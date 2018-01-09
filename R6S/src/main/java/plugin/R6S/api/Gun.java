@@ -17,23 +17,40 @@ import plugin.R6S.customitem.Sniper;
 public class Gun {
 
 	public static boolean redirectGun(Player player, ItemStack gun, Object[] args) {
-		if (Objects.equals(gun.getItemMeta().getDisplayName(), null)) return false;
-		switch (gun.getItemMeta().getDisplayName()) {
-		case "Shotgun":
+		if (Objects.equals(NBT.readItemTag(gun, "gun", "string"), null)) return false;
+		switch (NBT.readItemTag(gun, "gun", "string").toString()) {
+		case "shotgun":
 			Shotgun shotgun = new Shotgun();
 			shotgun.gun(player, gun, args);
 			return true;
-		case "Sniper":
+		case "sniper":
 			Sniper sniper = new Sniper();
 			sniper.gun(player, gun, args);
 			return true;
-		case "Rifle":
+		case "rifle":
 			Rifle rifle = new Rifle();
 			rifle.gun(player, gun, args);
 			return true;
 		default:
 			return false;
 		}
+		//if (Objects.equals(gun.getItemMeta().getDisplayName(), null)) return false;
+		//switch (gun.getItemMeta().getDisplayName()) {
+		//case "Shotgun":
+		//	Shotgun shotgun = new Shotgun();
+		//	shotgun.gun(player, gun, args);
+		//	return true;
+		//case "Sniper":
+		//	Sniper sniper = new Sniper();
+		//	sniper.gun(player, gun, args);
+		//	return true;
+		//case "Rifle":
+		//	Rifle rifle = new Rifle();
+		//	rifle.gun(player, gun, args);
+		//	return true;
+		//default:
+		//	return false;
+		//}
 	}
 
 	public static Vector getAIM(Player player) {

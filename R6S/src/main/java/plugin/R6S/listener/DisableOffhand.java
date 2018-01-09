@@ -14,6 +14,15 @@ import plugin.R6S.api.NBT;
 public class DisableOffhand implements Listener{
 	static String offhandtag = "offhand";
 
+	public static String getTag(String tag) {
+		switch (tag) {
+		case "offhand":
+			return offhandtag;
+		default:
+			return tag;
+		}
+	}
+
 	public static boolean isAllowedOffhand(ItemStack item) {
 		if (Objects.equals(NBT.readItemTag(item, offhandtag, "String"), "true")) {
 			return true;

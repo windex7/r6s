@@ -1,5 +1,7 @@
 package plugin.R6S.listener;
 
+import java.util.Objects;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,6 +41,14 @@ public class InventoryListener implements Listener {
 				event.setCancelled(true);
 				event.setResult(Result.DENY);
 				player.updateInventory();
+			}
+		}
+		if (player.getInventory().getItemInOffHand() != null) {
+			ItemStack offhanditem = player.getInventory().getItemInOffHand();
+			if (Objects.equals(NBT.readItemTag(offhanditem, DisableOffhand.getTag("offhand"), "string"), "true")) {
+
+			} else {
+				event.setCancelled(true);
 			}
 		}
 	}
