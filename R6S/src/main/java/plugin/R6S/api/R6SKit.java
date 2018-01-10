@@ -11,8 +11,9 @@ import plugin.R6S.R6SPlugin;
 
 public class R6SKit {
 	static String[] kits = {
-			"default",
-			"sniper"
+		"default",
+		"sniper",
+		"shotgun"
 	};
 
 	static Plugin r6s = R6SPlugin.getInstance();
