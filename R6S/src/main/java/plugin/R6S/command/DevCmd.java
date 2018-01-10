@@ -175,6 +175,9 @@ public class DevCmd implements CommandExecutor {
 				if (args.length <= 1) return false;
 				PreventCertainExplosion.setExplosionDisabled(Boolean.valueOf(args[1]));
 				return true;
+			case "repair":
+				player.getInventory().getItemInMainHand().setDurability((short)0);
+				return true;
 			default:
 				return false;
 			}

@@ -42,4 +42,13 @@ public class R6SConfig {
 			return null;
 		}
 	}
+
+	public static String getTag(String str) {
+		switch (str) {
+		case "offhand":
+			return "offhand";
+		default:
+			return str;
+		}
+	}
 }

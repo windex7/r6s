@@ -20,10 +20,10 @@ import plugin.R6S.command.R6SCmd;
 import plugin.R6S.listener.ChangePlayerAttributes;
 import plugin.R6S.listener.ClickedCommandBlock;
 import plugin.R6S.listener.DisableOffhand;
+import plugin.R6S.listener.InventoryListener;
 import plugin.R6S.listener.PreventCertainExplosion;
 import plugin.R6S.listener.PreventHangingGlitch;
 import plugin.R6S.listener.PreventInteractGlitch;
-import plugin.R6S.listener.InventoryListener;
 import plugin.R6S.listener.PreventPlayerBreakBlock;
 import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
@@ -98,6 +98,7 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				Timing.tick();
 				Damage.removeDamageTickAllEntity();
 				Scoping.checkAllPlayerScoping();
+				DisableOffhand.checkAllOffhand();
 			}
 		}.runTaskTimer(instance, 1, 1);
 		//Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(instance, new Runnable() {

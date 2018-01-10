@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -332,7 +333,7 @@ public class R6SGame {
 	}
 
 	public static void onPlayerDie(Player player, Location deathloc) {
-		player.spigot().respawn();
+		// player.spigot().respawn();
 		if (playerlist.contains(player)) {
 			if (isAliveList(player)) {
 				removeAliveList(player);
@@ -341,6 +342,12 @@ public class R6SGame {
 				}
 			}
 		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+			@Override
+			public void run () {
+				player.spigot().respawn();
+			}
+		}, 1);
 	}
 
 	public static void applyKit(Player player, String kit, String team) {

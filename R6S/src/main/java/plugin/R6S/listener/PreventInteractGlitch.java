@@ -18,19 +18,17 @@ public class PreventInteractGlitch implements Listener {
 			LivingEntity target = (LivingEntity) event.getRightClicked();
 			if (player.getInventory().getItemInMainHand() != null) {
 				ItemStack item = player.getInventory().getItemInMainHand();
-				if (item.getItemMeta().getDisplayName() != null) {
-					if (target instanceof Player) {
-						Player victim = (Player) target;
-						if (Teaming.getPlayerTeam(victim).equals(Teaming.getPlayerTeam(player))) {
-							Object[] gundamage = {item};
-							Gun.punishFriendlyFire(player, victim, gundamage);
-							event.setCancelled(true);
-							return;
-						}
+				if (target instanceof Player) {
+					Player victim = (Player) target;
+					if (Teaming.getPlayerTeam(victim).equals(Teaming.getPlayerTeam(player))) {
+						Object[] gundamage = { item };
+						Gun.punishFriendlyFire(player, victim, gundamage);
+						event.setCancelled(true);
+						return;
 					}
-					Object args[] = {"interact", target};
-					Gun.redirectGun(player, item, args);
 				}
+				Object args[] = { "interact", target };
+				Gun.redirectGun(player, item, args);
 			}
 		}
 		event.setCancelled(true);

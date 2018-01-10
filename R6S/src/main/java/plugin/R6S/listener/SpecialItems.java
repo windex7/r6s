@@ -134,10 +134,11 @@ public class SpecialItems implements Listener {
 		final int fragfuse = 80;
 
 		if (item != null) {
-			//if (item.getItemMeta().getDisplayName() != null) {
 			Object args[] = {"trigger"};
 			Gun.redirectGun(player, item, args);
-			//}
+
+
+
 			if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
 				switch (item.getType().toString()) {
 				case "SLIME_BALL":

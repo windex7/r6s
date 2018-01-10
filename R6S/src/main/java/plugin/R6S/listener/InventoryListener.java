@@ -1,7 +1,5 @@
 package plugin.R6S.listener;
 
-import java.util.Objects;
-
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,7 +22,8 @@ public class InventoryListener implements Listener {
 		// String invname = inventory.getName();
 		ItemStack cursoritem = event.getCursor();
 		ItemStack item = event.getCurrentItem();
-		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
+		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR)
+			return;
 		if (item != null && item.getType() != Material.AIR) {
 			if (NBT.readItemTag(item, "bound", "string") != null) {
 				// --any item with nbttag which key is "bound" can't be
@@ -43,26 +42,19 @@ public class InventoryListener implements Listener {
 				player.updateInventory();
 			}
 		}
-		if (player.getInventory().getItemInOffHand() != null) {
-			ItemStack offhanditem = player.getInventory().getItemInOffHand();
-			if (Objects.equals(NBT.readItemTag(offhanditem, DisableOffhand.getTag("offhand"), "string"), "true")) {
-
-			} else {
-				event.setCancelled(true);
-			}
-		}
 	}
 
 	@EventHandler
 	public void onDropItem(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItemDrop().getItemStack();
-		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return;
+		if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR)
+			return;
 		if (item != null && item.getType() != Material.AIR) {
 			if (NBT.readItemTag(item, "gun", "string") != null) {
 				if (Gun.redirectGun(player, item, null)) {
 					event.getItemDrop().remove();
-					Gun.redirectGun(player, item, new Object[] {"reload"});
+					Gun.redirectGun(player, item, new Object[] { "reload" });
 				}
 			}
 		}
