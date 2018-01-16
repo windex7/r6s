@@ -8,8 +8,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryIO {
-	public static void savePlayerInventory(Player player, String filename, String key) {
-		ItemStack[] items = player.getInventory().getContents();
+	public static void saveInventory(Player player, Inventory inventory, String filename, String key) {
+		ItemStack[] items = inventory.getContents();
 		String itemsstring = Base64Item.itemToStringList(items);
 		switch (filename) {
 		case "player":
@@ -27,6 +27,14 @@ public class InventoryIO {
 			break;
 		}
 		return;
+	}
+
+	public static void savePlayerInventory(Player player, String filename, String key) {
+		saveInventory(player, player.getInventory(), filename, key);
+	}
+
+	public static void savePlayerOpeningInventory(Player player, String filename, String key) {
+		saveInventory(player, player.getOpenInventory().getTopInventory(), filename, key);
 	}
 
 	public static void backupPlayerInventory(Player player) {

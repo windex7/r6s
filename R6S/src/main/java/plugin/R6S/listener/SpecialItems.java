@@ -50,6 +50,7 @@ import plugin.R6S.R6SPlugin;
 import plugin.R6S.api.Gun;
 import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
+import plugin.R6S.api.R6SKit;
 import plugin.R6S.api.Timing;
 
 public class SpecialItems implements Listener {
@@ -134,10 +135,15 @@ public class SpecialItems implements Listener {
 		final int fragfuse = 80;
 
 		if (item != null) {
-			Object args[] = {"trigger"};
-			Gun.redirectGun(player, item, args);
+			if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+				Object args[] = {"reload"};
+				Gun.redirectGun(player, item, args);
+			} else if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+				Object args[] = {"trigger"};
+				Gun.redirectGun(player, item, args);
+			}
 
-
+			R6SKit.selectKit(player, item);
 
 			if (action.equals(Action.LEFT_CLICK_AIR) || action.equals(Action.LEFT_CLICK_BLOCK)) {
 				switch (item.getType().toString()) {

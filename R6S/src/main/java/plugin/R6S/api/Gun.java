@@ -10,7 +10,10 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import plugin.R6S.customitem.Pistol;
 import plugin.R6S.customitem.Rifle;
+import plugin.R6S.customitem.SMG;
+import plugin.R6S.customitem.Sawedoff;
 import plugin.R6S.customitem.Shotgun;
 import plugin.R6S.customitem.Sniper;
 
@@ -18,7 +21,7 @@ public class Gun {
 
 	public static boolean redirectGun(Player player, ItemStack gun, Object[] args) {
 		if (Objects.equals(NBT.readItemTag(gun, "gun", "string"), null)) return false;
-		switch (NBT.readItemTag(gun, "gun", "string").toString()) {
+		switch (NBT.readItemTag(gun, "gun", "string").toString().toLowerCase()) {
 		case "shotgun":
 			Shotgun shotgun = new Shotgun();
 			shotgun.gun(player, gun, args);
@@ -30,6 +33,18 @@ public class Gun {
 		case "rifle":
 			Rifle rifle = new Rifle();
 			rifle.gun(player, gun, args);
+			return true;
+		case "smg":
+			SMG smg = new SMG();
+			smg.gun(player, gun, args);
+			return true;
+		case "pistol":
+			Pistol pistol = new Pistol();
+			pistol.gun(player, gun, args);
+			return true;
+		case "sawedoff":
+			Sawedoff sawedoff = new Sawedoff();
+			sawedoff.gun(player, gun, args);
 			return true;
 		default:
 			return false;
@@ -51,6 +66,11 @@ public class Gun {
 		//default:
 		//	return false;
 		//}
+	}
+
+	public static String getGunName(ItemStack gun) {
+		if (Objects.equals(NBT.readItemTag(gun, "gun", "string"), null)) return "notgun";
+		return (NBT.readItemTag(gun, "gun", "string").toString().toLowerCase());
 	}
 
 	public static Vector getAIM(Player player) {

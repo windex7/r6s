@@ -2,11 +2,11 @@ package plugin.R6S.customitem;
 
 public class Rifle extends SnowballGunTemplate {
 	public Rifle() {
-		cooltime = 1; // tick
+		cooltime = 3; // tick
 		reloadtime = 25;
-		this.magazinesize = 40;
+		magazinesize = 40;
 		speed = 3;
-		damage = 1.5;
+		damage = 2;
 		kb = 0.1;
 		number = 1;
 		spread = 0.07;

@@ -23,7 +23,9 @@ public class SnowballGunTemplate {
 	String reloadkey = "isreloading";
 	long reloadtime;
 	String magazinekey = "remainbullet";
-	short magazinesize = 1;
+	short magazinesize;
+	int burst = 1;
+	long burstdelay = 1;
 	double speed;
 	double damage;
 	boolean isdamagetruevalue = false;
@@ -55,8 +57,19 @@ public class SnowballGunTemplate {
 			}
 			setFired(shooter, gun);
 			// setCTed(shooter, gun, cooltime);
-			Gun.shootBullet(shooter, gun, speed, damage, isdamagetruevalue, kb, number, spread, recoil, gun.getItemMeta().getDisplayName());
+			Gun.shootBullet(shooter, gun, speed, damage, isdamagetruevalue, kb, number, spread, recoil, Gun.getGunName(gun));
 			playSound(shooter, shooter.getLocation(), soundmode);
+			if (burst > 1) {
+				for (int i = 1; i < burst; i++) {
+					r6s.getServer().getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+						@Override
+						public void run() {
+							Gun.shootBullet(shooter, gun, speed, damage, isdamagetruevalue, kb, number, spread, recoil, Gun.getGunName(gun));
+							playSound(shooter, shooter.getLocation(), soundmode);
+						}
+					}, burstdelay * i);
+				}
+			}
 			break;
 		case "interact":
 			if (isEmpty(gun)) {
@@ -72,7 +85,7 @@ public class SnowballGunTemplate {
 			}
 			setFired(shooter, gun);
 			// setCTed(shooter, gun, cooltime);
-			Gun.interact(shooter, gun, (LivingEntity) args[1], damage, number, isdamagetruevalue);
+			Gun.interact(shooter, gun, (LivingEntity) args[1], damage, number * burst, isdamagetruevalue);
 			playSound(shooter, shooter.getLocation(), soundmode);
 			break;
 		case "hiteffect":

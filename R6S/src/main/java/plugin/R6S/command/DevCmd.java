@@ -43,7 +43,11 @@ public class DevCmd implements CommandExecutor {
 				try {
 					if (args.length <= 1)
 						return false;
-					if (args.length >= 3) {
+					if (args.length == 4) {
+						InventoryIO.savePlayerOpeningInventory(r6s.getServer().getPlayer(args[1]), args[2], args[3]);
+						return true;
+					}
+					if (args.length == 3) {
 						// --specify filepath. args[1]:filename, args[2]:path--
 						//File targetfile = new File(r6s.getDataFolder(), args[1] + ".yml");
 						//FileConfiguration targetconfig = YamlConfiguration.loadConfiguration(targetfile);

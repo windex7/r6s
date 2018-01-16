@@ -12,7 +12,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import plugin.R6S.api.Gun;
+import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
+import plugin.R6S.api.R6SKit;
 
 public class InventoryListener implements Listener {
 	@EventHandler
@@ -31,6 +33,17 @@ public class InventoryListener implements Listener {
 				event.setCancelled(true);
 				event.setResult(Result.DENY);
 				player.updateInventory();
+			}
+			if (NBT.readItemTag(item, "kit", "string") != null) {
+				Metadata.setMetadata(player, "kit", NBT.readItemTag(item, "kit", "string"));
+				for (ItemStack invitem : inventory.getContents()) {
+					if (!(invitem != null)) continue;
+					if (invitem.getType() == Material.AIR) continue;
+					if (invitem.containsEnchantment(R6SKit.getKitEnch())) {
+						invitem.removeEnchantment(R6SKit.getKitEnch());
+					}
+				}
+				R6SKit.enchKitItem(item);
 			}
 		}
 		if (cursoritem != null && cursoritem.getType() != Material.AIR) {
