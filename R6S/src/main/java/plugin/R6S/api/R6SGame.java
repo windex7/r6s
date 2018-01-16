@@ -233,6 +233,8 @@ public class R6SGame {
 
 	public static void addQueue(Player player) {
 		queue.add(player);
+		InventoryIO.backupPlayerInventory(player);
+		player.teleport(R6SConfig.getWaypoint("stage1"));
 		if (getNumberOfQueue() >= minstartnum && !(isCountingDown)) {
 			preStartGame();
 		}
@@ -273,7 +275,7 @@ public class R6SGame {
 			if (playerlist.contains(player)) {
 				r6s.getServer().getLogger().info("warning: " + player.getName() + " is already exists on playerlist!");
 			} else {
-				InventoryIO.backupPlayerInventory(player);
+				// InventoryIO.backupPlayerInventory(player);
 				addPlayerList(player);
 			}
 		}
@@ -333,7 +335,6 @@ public class R6SGame {
 	}
 
 	public static void onPlayerDie(Player player, Location deathloc) {
-		// player.spigot().respawn();
 		if (playerlist.contains(player)) {
 			if (isAliveList(player)) {
 				removeAliveList(player);

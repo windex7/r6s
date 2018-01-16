@@ -15,6 +15,7 @@ public class ReleasePlayerData implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		resetPlayerData(player);
 		releasePlayerData(player);
 	}
 
