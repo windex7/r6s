@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -29,6 +30,23 @@ public class R6SGame {
 	static String blue = "CounterTerrorist";
 	static String white = "FFA";
 	static String defaultcolor = "nocollision";
+
+	static String stage = "stage1";
+
+	public static String getStage() {
+		return stage;
+	}
+
+	public static void changeStage(String stagename) {
+		switch (stagename) {
+		case "stage1":
+			stage = stagename;
+			break;
+		default:
+			break;
+		}
+		return;
+	}
 
 	public static String getTeamName(String color) {
 		switch (color) {
@@ -155,7 +173,7 @@ public class R6SGame {
 			winteam = "draw";
 		}
 		for (Player player : getPlayerList()) {
-			player.teleport(R6SConfig.getSpawnpoint("spec"));
+			player.teleport(R6SConfig.getWaypoint(stage, "spec"));
 			InventoryIO.rollbackPlayerInventory(player);
 			switch (winteam) {
 			case "red":
@@ -234,7 +252,9 @@ public class R6SGame {
 	public static void addQueue(Player player) {
 		queue.add(player);
 		InventoryIO.backupPlayerInventory(player);
-		player.teleport(R6SConfig.getWaypoint("stage1"));
+		player.teleport(R6SConfig.getWaypoint(stage, "lobby"));
+		player.setGameMode(GameMode.SURVIVAL);
+		InventoryIO.loadPlayerInventory(player, "config", "inv.kitselect");
 		if (getNumberOfQueue() >= minstartnum && !(isCountingDown)) {
 			preStartGame();
 		}
@@ -243,6 +263,8 @@ public class R6SGame {
 	public static void removeQueue(Player player) {
 		if (isQueue(player)) {
 			queue.remove(player);
+			InventoryIO.rollbackPlayerInventory(player);
+			player.teleport(R6SConfig.getWaypoint("hub", "lobby"));
 		}
 	}
 

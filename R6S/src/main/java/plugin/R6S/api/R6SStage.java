@@ -23,7 +23,7 @@ public class R6SStage {
 	static Plugin r6s = R6SPlugin.getInstance();
 
 	public static void regenStage() {
-		R6SStage.pasteSchematic("stage", R6SConfig.getWaypoint("stage"));
+		R6SStage.pasteSchematic("stage", R6SConfig.getWaypoint(R6SGame.getStage(), "stage"));
 	}
 
 	public static void pasteSchematic(String schematicname, Location loc) {

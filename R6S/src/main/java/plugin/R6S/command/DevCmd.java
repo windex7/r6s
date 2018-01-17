@@ -19,6 +19,7 @@ import plugin.R6S.api.InventoryIO;
 import plugin.R6S.api.Metadata;
 import plugin.R6S.api.NBT;
 import plugin.R6S.api.R6SConfig;
+import plugin.R6S.api.R6SGame;
 import plugin.R6S.api.R6SStage;
 import plugin.R6S.listener.PreventCertainExplosion;
 
@@ -169,7 +170,7 @@ public class DevCmd implements CommandExecutor {
 					return true;
 				}
 			case "regenstage":
-				R6SStage.pasteSchematic("stage", R6SConfig.getWaypoint("stage"));
+				R6SStage.pasteSchematic("stage", R6SConfig.getWaypoint(R6SGame.getStage(), "stage"));
 				return true;
 			case "reloadconfig":
 				R6SConfig.reload();
