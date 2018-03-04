@@ -20,7 +20,7 @@ public class R6SConfig {
 		stage1bluespawn = (Location) Config.getGameConfigData("spawnpoint.bluespawn");
 		stage1specspawn = (Location) Config.getGameConfigData("spawnpoint.spectator");
 		stage1lobby = (Location) Config.getGameConfigData("loc.stage1.lobby");
-		stage1point = (Location) Config.getGameConfigData("stagepoint.stage1");
+		stage1point = (Location) Config.getGameConfigData("loc.stage1.stagepoint");
 	}
 
 	//public static Location getSpawnpoint(String name) {

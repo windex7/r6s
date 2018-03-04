@@ -69,7 +69,7 @@ public class ProjectileEpicGlass implements Listener {
 						cloneArrow(arrow, shooter);
 						break;
 					} else {
-						if (PreventCertainExplosion.isBreakable(hitblock) == false) {
+						if (ManageExplosion.isBreakable(hitblock) == false) {
 							continue;
 						} else {
 							if (hitblock.getType() == Material.TNT) {
@@ -112,7 +112,7 @@ public class ProjectileEpicGlass implements Listener {
 						cloneSnowball(snowball, shooter);
 						break;
 					} else {
-						if (PreventCertainExplosion.isBreakable(hitblock) == false) {
+						if (ManageExplosion.isBreakable(hitblock) == false) {
 							continue;
 						} else {
 							if (hitblock.getType() == Material.TNT) {

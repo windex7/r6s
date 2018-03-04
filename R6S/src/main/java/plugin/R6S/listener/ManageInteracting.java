@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import plugin.R6S.api.Gun;
 import plugin.R6S.api.Teaming;
 
-public class PreventInteractGlitch implements Listener {
+public class ManageInteracting implements Listener {
 	@EventHandler
 	public static void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
 		Player player = event.getPlayer();

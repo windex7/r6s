@@ -9,11 +9,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import plugin.R6S.R6SPlugin;
-import plugin.R6S.listener.PreventCertainExplosion;
+import plugin.R6S.listener.ManageExplosion;
 
 public class R6SGame {
 	static Plugin r6s = R6SPlugin.getInstance();
@@ -159,7 +160,12 @@ public class R6SGame {
 		for (Player player : getPlayerList()) {
 			player.sendMessage("Started Round: " + (round + 1));
 		}
-		Teaming.spawnTeamMember(isSwitched);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+			@Override
+			public void run() {
+				Teaming.spawnTeamMember(isSwitched);
+			}
+		}, 10);
 	}
 
 	public static void endGame() {
@@ -197,7 +203,7 @@ public class R6SGame {
 			}
 		}
 		clearGameData();
-		PreventCertainExplosion.setExplosionDisabled(true);
+		ManageExplosion.setExplosionDisabled(true);
 		R6SStage.regenStage();
 	}
 
@@ -254,10 +260,15 @@ public class R6SGame {
 		InventoryIO.backupPlayerInventory(player);
 		player.teleport(R6SConfig.getWaypoint(stage, "lobby"));
 		player.setGameMode(GameMode.SURVIVAL);
-		InventoryIO.loadPlayerInventory(player, "config", "inv.kitselect");
-		if (getNumberOfQueue() >= minstartnum && !(isCountingDown)) {
-			preStartGame();
-		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+			@Override
+			public void run() {
+				InventoryIO.loadPlayerInventory(player, "config", "inv.queue");
+				if (getNumberOfQueue() >= minstartnum && !(isCountingDown)) {
+					preStartGame();
+				}
+			}
+		}, 10);
 	}
 
 	public static void removeQueue(Player player) {
@@ -297,7 +308,6 @@ public class R6SGame {
 			if (playerlist.contains(player)) {
 				r6s.getServer().getLogger().info("warning: " + player.getName() + " is already exists on playerlist!");
 			} else {
-				// InventoryIO.backupPlayerInventory(player);
 				addPlayerList(player);
 			}
 		}
@@ -351,38 +361,61 @@ public class R6SGame {
 		bluepoint = 0;
 		processQueue();
 		Teaming.spawnTeamMember(isSwitched);
-		PreventCertainExplosion.setExplosionDisabled(false);
+		ManageExplosion.setExplosionDisabled(false);
 		R6SStage.regenStage();
 		r6s.getServer().broadcastMessage("Round: " + round);
 	}
 
 	public static void onPlayerDie(Player player, Location deathloc) {
-		if (playerlist.contains(player)) {
-			if (isAliveList(player)) {
-				removeAliveList(player);
-				if (deathloc.getBlockY() > 0) {
-					player.teleport(deathloc);
-				}
-			}
-		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 			@Override
 			public void run () {
 				player.spigot().respawn();
 			}
-		}, 1);
+		}, 10);
+
+		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+			@Override
+			public void run () {
+				if (playerlist.contains(player)) {
+					player.setGameMode(GameMode.SPECTATOR);
+					if (isAliveList(player)) {
+						removeAliveList(player);
+						if (deathloc.getBlockY() > 0) {
+							player.teleport(deathloc);
+						} else {
+							Location loc = deathloc.clone();
+							loc.setY(10);
+							player.teleport(loc);
+						}
+					}
+				}
+			}
+		}, 20);
+	}
+
+	public static void applyEquipments(Player player, String team) {
+		String kit = R6SKit.getKit(player);
+		applyKit(player, kit, team);
+		String[] subweapons = R6SKit.getSubweapon(player);
+		for (String subweapon : subweapons) {
+			applySubweapon(player, subweapon);
+		}
 	}
 
 	public static void applyKit(Player player, String kit, String team) {
 		String period = ".";
 		String configname = "config";
 		String kitstring = "kit";
-		switch (kit) {
-		case "default":
-			InventoryIO.loadPlayerInventory(player, configname, kitstring + period + kit + period + team);
-			break;
-		default:
-			break;
-		}
+		InventoryIO.loadPlayerInventory(player, configname, kitstring + period + kit + period + team);
+	}
+
+	public static void applySubweapon(Player player, String weapon) {
+		String period = ".";
+		String configname = "config";
+		String substring = "item.grenade";
+		String weaponstring = Config.getConfig(configname, substring + period + weapon).toString();
+		ItemStack item = Base64Item.itemFromString(weaponstring);
+		player.getInventory().addItem(item);
 	}
 }

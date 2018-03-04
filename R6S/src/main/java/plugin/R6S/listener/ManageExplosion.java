@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
-public class PreventCertainExplosion implements Listener {
+public class ManageExplosion implements Listener {
 	public static boolean disableexplosion = true;
 	public static ArrayList<Material> cannotexplodeblocks = new ArrayList<Material>(Arrays.asList(Material.BARRIER,
 			Material.SNOW_BALL, Material.SNOW_BLOCK, Material.STAINED_CLAY, Material.PAINTING, Material.SEA_LANTERN,

@@ -21,10 +21,10 @@ import plugin.R6S.listener.ChangePlayerAttributes;
 import plugin.R6S.listener.ClickedCommandBlock;
 import plugin.R6S.listener.DisableOffhand;
 import plugin.R6S.listener.InventoryListener;
-import plugin.R6S.listener.PreventCertainExplosion;
-import plugin.R6S.listener.PreventHangingGlitch;
-import plugin.R6S.listener.PreventInteractGlitch;
-import plugin.R6S.listener.PreventPlayerBreakBlock;
+import plugin.R6S.listener.ManageExplosion;
+import plugin.R6S.listener.ManageHanging;
+import plugin.R6S.listener.ManageInteracting;
+import plugin.R6S.listener.ManagePlayerBreakBlock;
 import plugin.R6S.listener.ProjectileEpicGlass;
 import plugin.R6S.listener.Rapeling;
 import plugin.R6S.listener.ReleasePlayerData;
@@ -56,11 +56,11 @@ public class R6SPlugin extends JavaPlugin implements Listener {
 				new ChangePlayerAttributes(),
 				new ClickedCommandBlock(),
 				new DisableOffhand(),
-				new PreventCertainExplosion(),
-				new PreventHangingGlitch(),
-				new PreventInteractGlitch(),
+				new ManageExplosion(),
+				new ManageHanging(),
+				new ManageInteracting(),
 				new InventoryListener(),
-				new PreventPlayerBreakBlock(),
+				new ManagePlayerBreakBlock(),
 				new ProjectileEpicGlass(),
 				new Rapeling(),
 				new ReleasePlayerData(),

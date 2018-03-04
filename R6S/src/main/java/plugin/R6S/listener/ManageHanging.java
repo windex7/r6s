@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 
-public class PreventHangingGlitch implements Listener{
+public class ManageHanging implements Listener{
 	@EventHandler
 	public static void onHangingBreak(HangingBreakEvent event) {
 		if (event.getCause().equals(RemoveCause.PHYSICS) || event.getCause().equals(RemoveCause.OBSTRUCTION) || event.getCause().equals(RemoveCause.ENTITY)) return;

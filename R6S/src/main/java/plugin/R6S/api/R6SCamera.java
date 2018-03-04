@@ -25,11 +25,11 @@ public class R6SCamera {
 
 		// long time = Calendar.getInstance().getTimeInMillis();
 		long time = Timing.getTime();
-		long cooltime = 30000; // 30sec
+		long cooltime = 600; // 30sec
 		if (cameract.containsKey(location)) {
 			if (time - cameract.get(location) <= cooltime) {
-				long ctsec = (time - cameract.get(location)) / 1000;
-				player.sendMessage(ChatColor.DARK_RED + "this security camera is still in cooldown! try again in" + String.valueOf(ctsec) + "sec!");
+				long ctsec = (cooltime - (time - cameract.get(location))) / 20;
+				player.sendMessage(ChatColor.DARK_RED + "this security camera is still in cooldown! try again in " + String.valueOf(ctsec) + "sec!");
 				return;
 			} // else { // do below
 			// }

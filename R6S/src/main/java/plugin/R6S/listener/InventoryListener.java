@@ -1,5 +1,8 @@
 package plugin.R6S.listener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,6 +20,16 @@ import plugin.R6S.api.NBT;
 import plugin.R6S.api.R6SKit;
 
 public class InventoryListener implements Listener {
+	List<String> keywords = new ArrayList<String>() {
+		{
+			add("kit");
+			add("grenade1");
+			add("grenade2");
+			add("grenade3");
+			add("grenade4");
+		}
+	};
+
 	@EventHandler
 	public void onInvInteract(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
@@ -34,17 +47,30 @@ public class InventoryListener implements Listener {
 				event.setResult(Result.DENY);
 				player.updateInventory();
 			}
-			if (NBT.readItemTag(item, "kit", "string") != null) {
-				Metadata.setMetadata(player, "kit", NBT.readItemTag(item, "kit", "string"));
-				for (ItemStack invitem : inventory.getContents()) {
-					if (!(invitem != null)) continue;
-					if (invitem.getType() == Material.AIR) continue;
-					if (invitem.containsEnchantment(R6SKit.getKitEnch())) {
-						invitem.removeEnchantment(R6SKit.getKitEnch());
+			for (String keyword : keywords) {
+				if (NBT.readItemTag(item, keyword, "string") != null) {
+					Metadata.setMetadata(player, keyword, NBT.readItemTag(item, keyword, "string"));
+					for (ItemStack invitem : inventory.getContents()) {
+						if (!(invitem != null)) continue;
+						if (invitem.getType() == Material.AIR) continue;
+						if (invitem.containsEnchantment(R6SKit.getKitEnch()) && NBT.readItemTag(invitem, keyword, "string") != null) {
+							invitem.removeEnchantment(R6SKit.getKitEnch());
+						}
 					}
+					R6SKit.enchKitItem(item);
 				}
-				R6SKit.enchKitItem(item);
 			}
+			//if (NBT.readItemTag(item, "kit", "string") != null) {
+			//	Metadata.setMetadata(player, "kit", NBT.readItemTag(item, "kit", "string"));
+			//	for (ItemStack invitem : inventory.getContents()) {
+			//		if (!(invitem != null)) continue;
+			//		if (invitem.getType() == Material.AIR) continue;
+			//		if (invitem.containsEnchantment(R6SKit.getKitEnch())) {
+			//			invitem.removeEnchantment(R6SKit.getKitEnch());
+			//		}
+			//	}
+			//	R6SKit.enchKitItem(item);
+			//}
 		}
 		if (cursoritem != null && cursoritem.getType() != Material.AIR) {
 			if (NBT.readItemTag(cursoritem, "bound", "string") != null) {

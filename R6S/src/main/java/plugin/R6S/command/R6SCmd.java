@@ -96,6 +96,13 @@ public class R6SCmd implements CommandExecutor {
 					break;
 				}
 				return true;
+			case "leavegame":
+				if (args.length <= 1) return false;
+				Player player = r6s.getServer().getPlayer(args[1]);
+				if (R6SGame.isQueue(player)) {
+					R6SGame.removeQueue(player);
+				}
+				return true;
 			}
 		}
 		return false;

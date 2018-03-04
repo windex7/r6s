@@ -22,6 +22,20 @@ public class Config {
 		if (!(devfile.exists())) devfile.createNewFile();
 	}
 
+	public static String getRealFilename(String keyword, Object data) {
+		switch (keyword) {
+		case "player":
+			return ((Player)data).getUniqueId().toString();
+		case "config":
+			return "config";
+		case "dev":
+		case "devfile":
+			return "devfile";
+		default:
+			return keyword;
+		}
+	}
+
 	public static void setGameConfig(String key, Object data) {
 		config.set(key, data);
 		r6s.saveConfig();

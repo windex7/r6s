@@ -21,6 +21,19 @@ public class R6SKit {
 		"shotgun"
 	};
 
+	static String[] grenades = {
+		"default",
+		"impact",
+		"c4",
+		"poison"
+	};
+
+	static int grenumber = 4;
+
+	public static int getSubweaponNum() {
+		return grenumber;
+	}
+
 	static Enchantment kititemench = Enchantment.DURABILITY;
 
 	public static Enchantment getKitEnch() {
@@ -31,7 +44,7 @@ public class R6SKit {
 		ItemMeta meta = item.getItemMeta();
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(meta);
-		item.addEnchantment(getKitEnch(), 1);
+		item.addUnsafeEnchantment(getKitEnch(), 1);
 	}
 
 	static Plugin r6s = R6SPlugin.getInstance();
@@ -67,16 +80,15 @@ public class R6SKit {
 				InventoryIO.openInventory(player, kitinv);
 				break;
 			case "grenadeselect":
-				int grenumber = 4;
 				Inventory greinv = InventoryIO.getInventory("config", "inv.grenadeselect", 6 * 9, "Select Grenade");
 				String[] selectedgre = new String[grenumber];
 				String keys[] = new String[grenumber];
 				for (int i = 1; i <= grenumber; i++) {
 					keys[i-1] = "grenade" + i;
 					if (Objects.equals(Metadata.getMetadata(player, keys[i-1]), null)) {
-						selectedgre[i] = "default";
+						selectedgre[i-1] = "default";
 					} else {
-						selectedgre[i] = Metadata.getMetadata(player, keys[i-1]).toString();
+						selectedgre[i-1] = Metadata.getMetadata(player, keys[i-1]).toString();
 					}
 				}
 				ItemStack[] greinvcontents = enchKitInvContents(greinv.getContents(), selectedgre, keys, "string");
@@ -126,6 +138,20 @@ public class R6SKit {
 		} else {
 			return "default";
 		}
+	}
+
+	public static String[] getSubweapon(Player player) {
+		String[] subweapons = new String[getSubweaponNum()];
+		for (int i = 1; i <= getSubweaponNum(); i++) {
+			if (Objects.equals(Metadata.getMetadata(player, "grenade" + i), null)) {
+				subweapons[i-1] = "default";
+			} else if (Arrays.asList(grenades).contains(Metadata.getMetadata(player, "grenade" + i).toString())){
+				subweapons[i-1] = Metadata.getMetadata(player, "grenade" + i).toString();
+			} else {
+				subweapons[i-1] = "default";
+			}
+		}
+		return subweapons;
 	}
 
 	public static ItemStack[] getKitContents(String kit, String team) {

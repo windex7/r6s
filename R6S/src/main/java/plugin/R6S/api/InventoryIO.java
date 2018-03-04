@@ -43,8 +43,9 @@ public class InventoryIO {
 	}
 
 	public static void loadPlayerInventory(Player player, String filename, String key) {
-		if (!(Config.getConfig(filename, key) != null)) return;
-		String itemsstring = Config.getConfig(filename, key).toString();
+		String realfilename = Config.getRealFilename(filename, player);
+		if (!(Config.getConfig(realfilename, key) != null)) return;
+		String itemsstring = Config.getConfig(realfilename, key).toString();
 		ItemStack[] invitem = Base64Item.itemFromStringList(itemsstring);
 		player.getInventory().setContents(invitem);
 		return;

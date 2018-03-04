@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
@@ -149,6 +150,11 @@ public class Teaming {
 			Player player = r6s.getServer().getPlayer(playername);
 			if (player != null) {
 				R6SGame.addAliveList(player, "red");
+				//InventoryIO.backupPlayerInventory(player);
+				player.getInventory().clear();
+				R6SGame.applyEquipments(player, "red");
+				player.setGameMode(GameMode.SURVIVAL);
+				player.setHealth(player.getMaxHealth());
 				if (isSwitched) {
 					player.teleport(R6SConfig.getSpawnpoint("blue"));
 				} else {
@@ -160,6 +166,11 @@ public class Teaming {
 			Player player = r6s.getServer().getPlayer(playername);
 			if (player != null) {
 				R6SGame.addAliveList(player, "blue");
+				//InventoryIO.backupPlayerInventory(player);
+				player.getInventory().clear();
+				R6SGame.applyEquipments(player, "blue");
+				player.setGameMode(GameMode.SURVIVAL);
+				player.setHealth(player.getMaxHealth());
 				if (isSwitched) {
 					player.teleport(R6SConfig.getSpawnpoint("red"));
 				} else {

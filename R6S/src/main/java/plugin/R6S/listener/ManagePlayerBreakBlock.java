@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-public class PreventPlayerBreakBlock implements Listener{
+public class ManagePlayerBreakBlock implements Listener{
 	@EventHandler
 	public static void preventBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();

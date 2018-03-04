@@ -1,19 +1,15 @@
 package plugin.R6S.command;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import plugin.R6S.R6SPlugin;
+import plugin.R6S.api.Base64Item;
 import plugin.R6S.api.Config;
 import plugin.R6S.api.InventoryIO;
 import plugin.R6S.api.Metadata;
@@ -21,7 +17,7 @@ import plugin.R6S.api.NBT;
 import plugin.R6S.api.R6SConfig;
 import plugin.R6S.api.R6SGame;
 import plugin.R6S.api.R6SStage;
-import plugin.R6S.listener.PreventCertainExplosion;
+import plugin.R6S.listener.ManageExplosion;
 
 public class DevCmd implements CommandExecutor {
 
@@ -31,13 +27,6 @@ public class DevCmd implements CommandExecutor {
 			return false;
 		Plugin r6s = R6SPlugin.getInstance();
 		Player player = (Player) sender;
-		String playeruuid = player.getUniqueId().toString();
-		File playerconfig = new File(r6s.getDataFolder(), playeruuid + ".yml");
-		FileConfiguration playerdata = YamlConfiguration.loadConfiguration(playerconfig);
-		ItemStack[] invcontents = player.getInventory().getContents();
-		FileConfiguration config = r6s.getConfig();
-		File devfile = new File(r6s.getDataFolder(), "devfile.yml");
-		FileConfiguration devconfig = YamlConfiguration.loadConfiguration(devfile);
 		if (args.length >= 1) {
 			switch (args[0]) {
 			case "invsave":
@@ -65,6 +54,24 @@ public class DevCmd implements CommandExecutor {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not save to the target file.");
 				}
 				break;
+			case "itemsave":
+				try {
+					if (args.length <= 1)
+						return false;
+					if (args.length == 3) {
+						Config.setConfig(args[1], args[2], Base64Item.itemToString(player.getInventory().getItemInMainHand()));
+						return true;
+					} else {
+						Config.setGameConfig(args[1], Base64Item.itemToString(player.getInventory().getItemInMainHand()));
+						return true;
+					}
+				} catch (Exception e) {
+					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not save to the target file.");
+				}
+				break;
+			case "invbackup":
+				InventoryIO.backupPlayerInventory(player);
+				return true;
 			case "invload":
 				try {
 					if (args.length <= 1)
@@ -87,6 +94,9 @@ public class DevCmd implements CommandExecutor {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Could not load from the target file.");
 				}
 				break;
+			case "invrollback":
+				InventoryIO.rollbackPlayerInventory(player);
+				return true;
 			case "readnbtstring":
 				if (args.length <= 1)
 					return false;
@@ -155,7 +165,7 @@ public class DevCmd implements CommandExecutor {
 					Config.setConfig(args[1], args[2], args[3]);
 					return true;
 				}
-			case "writelocconfig":
+			case "writelocation":
 				if (args.length <= 2) return false;
 				switch (args[1]) {
 				case "config":
@@ -178,7 +188,7 @@ public class DevCmd implements CommandExecutor {
 				return true;
 			case "preventexplosion":
 				if (args.length <= 1) return false;
-				PreventCertainExplosion.setExplosionDisabled(Boolean.valueOf(args[1]));
+				ManageExplosion.setExplosionDisabled(Boolean.valueOf(args[1]));
 				return true;
 			case "repair":
 				player.getInventory().getItemInMainHand().setDurability((short)0);
