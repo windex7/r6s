@@ -6,7 +6,7 @@ public class Pistol extends SnowballGunTemplate {
 		reloadtime = 25;
 		magazinesize = 12;
 		speed = 2.5;
-		damage = 4;
+		damage = 3;
 		kb = 0.4;
 		number = 1;
 		spread = 0.04;

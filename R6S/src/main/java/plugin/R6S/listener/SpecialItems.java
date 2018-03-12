@@ -68,9 +68,19 @@ public class SpecialItems implements Listener {
 		if (block.getType() == Material.SKULL) {
 			Skull skull = (Skull) block.getState();
 			String owner = skull.getOwner();
-			if (!(owner != null))
-				return;
-			if (owner.equalsIgnoreCase("MHF_TNT2")) {
+			//if (!(owner != null))
+			//	return;
+			List<String> tntblacklist = new ArrayList<String>() {
+				{
+					add("Zombie");
+				}
+			};
+			//if (owner.equalsIgnoreCase("MHF_TNT2") {
+			if (owner != null) {
+				if (tntblacklist.contains(owner)) {
+					return;
+				}
+			}
 				ItemStack detonator = new ItemStack(Material.LEVER, 1);
 				ItemMeta detonatormeta = detonator.getItemMeta();
 				detonatormeta.setDisplayName("Detonator");
@@ -93,7 +103,6 @@ public class SpecialItems implements Listener {
 					}
 				}, 2);
 				return;
-			}
 		}
 	}
 
@@ -248,6 +257,14 @@ public class SpecialItems implements Listener {
 				case "ENDER_PEARL":
 					if (item.getItemMeta().getDisplayName() != null) {
 						if (item.getItemMeta().getDisplayName().equals("Impact Grenade")) {
+							String igkey = "impactgrenade";
+							int grect = 60;
+							if (Metadata.getMetadata(player, igkey) != null) {
+								if (Timing.getTimeDiff(Long.parseLong(Metadata.getMetadata(player, igkey).toString())) <= grect) {
+									event.setCancelled(true);
+									return;
+								}
+							}
 							event.setCancelled(true);
 							EnderPearl grenade = player.launchProjectile(EnderPearl.class);
 							grenade.setShooter(null);
@@ -258,6 +275,7 @@ public class SpecialItems implements Listener {
 								item.setAmount(item.getAmount() - 1);
 							}
 							player.updateInventory();
+							Metadata.setMetadata(player, igkey, Timing.getTime());
 						}
 					}
 				case "GOLD_AXE":

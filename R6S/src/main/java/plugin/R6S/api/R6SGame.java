@@ -19,7 +19,7 @@ import plugin.R6S.listener.ManageExplosion;
 public class R6SGame {
 	static Plugin r6s = R6SPlugin.getInstance();
 	static int minstartnum = 2;
-	static int waittillstart = 20; // sec
+	static int waittillstart = 30; // sec
 	static int countdown;
 	static boolean isGameGoing = false;
 	static boolean isCountingDown = false;
@@ -122,7 +122,10 @@ public class R6SGame {
 		}
 	}
 
+	static long pointct = 200;
+	static long lastpointtime;
 	public static void endRound(String team) {
+		if (Timing.getTimeDiff(lastpointtime) <= pointct) return;
 		switch (team) {
 		case "red":
 			redpoint++;
@@ -150,7 +153,27 @@ public class R6SGame {
 		if (round % switchteaminterval == 0) {
 			switchTeamSpawn();
 		}
-		startRound();
+		lastpointtime = Timing.getTime();
+		int preroundct = 40;
+		new BukkitRunnable() {
+			public void run() {
+				int ct = preroundct;
+				if (ct > 0) {
+					ct--;
+					r6s.getServer().broadcastMessage("next round will start in " + ct + " sec!");
+					if (ct == 35) {
+						for (Player player : getPlayerList()) {
+							player.teleport(R6SConfig.getWaypoint(stage, "lobby"));
+							player.setGameMode(GameMode.SURVIVAL);
+							InventoryIO.loadPlayerInventory(player, "config", "inv.queue");
+						}
+					}
+				} else if (ct == 0) {
+					startRound();
+					cancel();
+				}
+			}
+		}.runTaskTimer(r6s, 20, 20);
 	}
 
 	public static void startRound() {
@@ -178,30 +201,35 @@ public class R6SGame {
 		} else {
 			winteam = "draw";
 		}
-		for (Player player : getPlayerList()) {
-			player.teleport(R6SConfig.getWaypoint(stage, "spec"));
-			InventoryIO.rollbackPlayerInventory(player);
-			switch (winteam) {
-			case "red":
-				if (Teaming.getPlayerTeam(player).equals("red")) {
-					player.sendMessage("You Win!!!");
-				} else {
-					player.sendMessage("You Lose...");
+		Bukkit.getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
+			@Override
+			public void run() {
+				for (Player player : getPlayerList()) {
+					player.teleport(R6SConfig.getWaypoint(stage, "spec"));
+					InventoryIO.rollbackPlayerInventory(player);
+					switch (winteam) {
+					case "red":
+						if (Teaming.getPlayerTeam(player).equals("red")) {
+							player.sendMessage("You Win!!!");
+						} else {
+							player.sendMessage("You Lose...");
+						}
+						break;
+					case "blue":
+						if (Teaming.getPlayerTeam(player).equals("blue")) {
+							player.sendMessage("You Win!!!");
+						} else {
+							player.sendMessage("You Lose...");
+						}
+						break;
+					case "draw":
+					default:
+						player.sendMessage("Draw!");
+						break;
+					}
 				}
-				break;
-			case "blue":
-				if (Teaming.getPlayerTeam(player).equals("blue")) {
-					player.sendMessage("You Win!!!");
-				} else {
-					player.sendMessage("You Lose...");
-				}
-				break;
-			case "draw":
-			default:
-				player.sendMessage("Draw!");
-				break;
 			}
-		}
+		}, 20);
 		clearGameData();
 		ManageExplosion.setExplosionDisabled(true);
 		R6SStage.regenStage();
@@ -399,7 +427,7 @@ public class R6SGame {
 		applyKit(player, kit, team);
 		String[] subweapons = R6SKit.getSubweapon(player);
 		for (String subweapon : subweapons) {
-			applySubweapon(player, subweapon);
+			applySubweapon(player, subweapon, team);
 		}
 	}
 
@@ -410,11 +438,21 @@ public class R6SGame {
 		InventoryIO.loadPlayerInventory(player, configname, kitstring + period + kit + period + team);
 	}
 
-	public static void applySubweapon(Player player, String weapon) {
+	public static void applySubweapon(Player player, String weapon, String team) {
 		String period = ".";
 		String configname = "config";
 		String substring = "item.grenade";
-		String weaponstring = Config.getConfig(configname, substring + period + weapon).toString();
+		String weaponstring;
+		List<String> teamvariedweaponlist = new ArrayList<String>() {
+			{
+				add("c4");
+			}
+		};
+		if (teamvariedweaponlist.contains(weapon)) {
+			weaponstring = Config.getConfig(configname, substring + period + weapon + period + team).toString();
+		} else {
+			weaponstring = Config.getConfig(configname, substring + period + weapon).toString();
+		}
 		ItemStack item = Base64Item.itemFromString(weaponstring);
 		player.getInventory().addItem(item);
 	}

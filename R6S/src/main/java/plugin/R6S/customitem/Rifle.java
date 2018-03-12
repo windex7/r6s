@@ -6,10 +6,10 @@ public class Rifle extends SnowballGunTemplate {
 		reloadtime = 25;
 		magazinesize = 40;
 		speed = 3;
-		damage = 2;
-		kb = 0.1;
+		damage = 3;
+		kb = 0.05;
 		number = 1;
-		spread = 0.07;
+		spread = 0.03;
 		recoil = 0;
 	}
 }

@@ -28,12 +28,13 @@ public class SnowballGunTemplate {
 	long burstdelay = 1;
 	double speed;
 	double damage;
+	double headshotbonus = 1.5;
 	boolean isdamagetruevalue = false;
 	double kb;
 	long number;
 	double spread;
 	double recoil;
-	int scopelevel = 4;
+	int scopelevel = 0;
 	String firesound[] = {"ENTITY_ZOMBIE_ATTACK_DOOR_WOOD", "ENTITY_ZOMBIE_ATTACK_DOOR_WOOD"};
 	float volume[] = {1, 1};
 	float pitch[] = {0, 2};
@@ -57,14 +58,14 @@ public class SnowballGunTemplate {
 			}
 			setFired(shooter, gun);
 			// setCTed(shooter, gun, cooltime);
-			Gun.shootBullet(shooter, gun, speed, damage, isdamagetruevalue, kb, number, spread, recoil, Gun.getGunName(gun));
+			Gun.shootBullet(shooter, gun, speed, damage, headshotbonus, isdamagetruevalue, kb, number, spread, recoil, Gun.getGunName(gun));
 			playSound(shooter, shooter.getLocation(), soundmode);
 			if (burst > 1) {
 				for (int i = 1; i < burst; i++) {
 					r6s.getServer().getScheduler().scheduleSyncDelayedTask(r6s, new Runnable() {
 						@Override
 						public void run() {
-							Gun.shootBullet(shooter, gun, speed, damage, isdamagetruevalue, kb, number, spread, recoil, Gun.getGunName(gun));
+							Gun.shootBullet(shooter, gun, speed, damage, headshotbonus, isdamagetruevalue, kb, number, spread, recoil, Gun.getGunName(gun));
 							playSound(shooter, shooter.getLocation(), soundmode);
 						}
 					}, burstdelay * i);
@@ -85,7 +86,7 @@ public class SnowballGunTemplate {
 			}
 			setFired(shooter, gun);
 			// setCTed(shooter, gun, cooltime);
-			Gun.interact(shooter, gun, (LivingEntity) args[1], damage, number * burst, isdamagetruevalue);
+			Gun.interact(shooter, gun, (LivingEntity) args[1], (Location) args[2], damage, number * burst, headshotbonus, isdamagetruevalue);
 			playSound(shooter, shooter.getLocation(), soundmode);
 			break;
 		case "hiteffect":
@@ -112,7 +113,9 @@ public class SnowballGunTemplate {
 	}
 
 	public void scope(Player player) {
-		player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, scopelevel, false, false), false);
+		if (scopelevel > 0) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, scopelevel, false, false), false);
+		}
 		return;
 	}
 

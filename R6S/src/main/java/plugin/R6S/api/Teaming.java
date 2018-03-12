@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -171,6 +173,8 @@ public class Teaming {
 				R6SGame.applyEquipments(player, "blue");
 				player.setGameMode(GameMode.SURVIVAL);
 				player.setHealth(player.getMaxHealth());
+				player.setFoodLevel(20);
+				player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 5, 5, false, false), false);
 				if (isSwitched) {
 					player.teleport(R6SConfig.getSpawnpoint("red"));
 				} else {

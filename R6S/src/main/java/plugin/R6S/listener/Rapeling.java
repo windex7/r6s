@@ -24,7 +24,7 @@ import plugin.R6S.api.Metadata;
 
 public class Rapeling implements Listener {
 	static Plugin r6s = R6SPlugin.getInstance();
-	static float flyspeed = 0.01f;
+	static float flyspeed = 0.02f;
 	static float defaultflyspeed = 0.2f;
 
 	@EventHandler

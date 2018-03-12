@@ -79,14 +79,14 @@ public class Gun {
 		return aim;
 	}
 
-	public static void shootBullet(Player player, ItemStack gun, double speed, double damage, boolean isdamagetruevalue, double kb, long number, double spread, double recoil, String gunname) {
+	public static void shootBullet(Player player, ItemStack gun, double speed, double damage, double headshotbonus, boolean isdamagetruevalue, double kb, long number, double spread, double recoil, String gunname) {
 		Vector aim = getAIM(player);
 		player.setVelocity(player.getVelocity().add(aim.clone().multiply(recoil * -1)));
-		shootBullet(player, gun, player.getEyeLocation(), aim, speed, damage, isdamagetruevalue, kb, number, spread, gunname);
+		shootBullet(player, gun, player.getEyeLocation(), aim, speed, damage, headshotbonus, isdamagetruevalue, kb, number, spread, gunname);
 		return;
 	}
 
-	public static void shootBullet(Player shooter, ItemStack gun, Location loc, Vector direction, double speed, double damage, boolean isdamagetruevalue, double kb, long number, double spread, String gunname) {
+	public static void shootBullet(Player shooter, ItemStack gun, Location loc, Vector direction, double speed, double damage, double headshotbonus, boolean isdamagetruevalue, double kb, long number, double spread, String gunname) {
 		for (int i = 0; i < number; i++) {
 			Vector directionclone = direction.clone();
 			Vector aim = directionclone.add(getRandomVector().multiply(spread)).normalize().multiply(speed);
@@ -98,6 +98,7 @@ public class Gun {
 			bullet.setShooter(shooter);
 			bullet.setVelocity(aim);
 			Metadata.setMetadata(bullet, "damage", damage);
+			Metadata.setMetadata(bullet, "headshotbonus", headshotbonus);
 			Metadata.setMetadata(bullet, "isdamagetruevalue", isdamagetruevalue);
 			Metadata.setMetadata(bullet, "kb", kb);
 			Metadata.setMetadata(bullet, "gunname", gunname);
@@ -105,9 +106,13 @@ public class Gun {
 		}
 	}
 
-	public static void interact(Player shooter, ItemStack gun, LivingEntity target, double damage, long number, boolean isdamagetruevalue) {
-		Damage.entityDamage(shooter, damage * number, target, isdamagetruevalue);
-		// target.damage(damage * number, player);
+	public static void interact(Player shooter, ItemStack gun, LivingEntity target, Location loc, double damage, long number, double headshotbonus, boolean isdamagetruevalue) {
+		if (isHeadshot(target.getLocation(), loc)) {
+			Damage.entityDamage(shooter, damage * number * headshotbonus, target, isdamagetruevalue);
+		} else {
+			Damage.entityDamage(shooter, damage * number, target, isdamagetruevalue);
+			// target.damage(damage * number, player);
+		}
 		return;
 	}
 
@@ -116,6 +121,8 @@ public class Gun {
 			LivingEntity damager = (LivingEntity) bullet.getShooter();
 			ItemStack gun = (ItemStack) Metadata.getMetadata(bullet, "gun");
 			double damage = (double) Metadata.getMetadata(bullet, "damage");
+			double headshotbonus = (double) Metadata.getMetadata(bullet, "headshotbonus");
+			if (isHeadshot(defender.getLocation(), bullet.getLocation())) damage = damage * headshotbonus;
 			boolean isdamagetruevalue = (boolean) Metadata.getMetadata(bullet, "isdamagetruevalue");
 			// defender.damage(damage, (Entity)bullet.getShooter());
 			if (defender instanceof Player && damager instanceof Player) {
@@ -142,6 +149,18 @@ public class Gun {
 			}
 		} else {
 			return;
+		}
+	}
+
+	public static boolean isHeadshot(Location victimloc, Location impactpoint) {
+		// for player(human)
+		double height = 1.4;
+		double victimlocy = victimloc.getY();
+		double impactlocy = impactpoint.getY();
+		if (victimlocy + height <= impactlocy) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 

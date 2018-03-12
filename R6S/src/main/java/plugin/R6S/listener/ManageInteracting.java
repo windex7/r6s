@@ -1,18 +1,20 @@
 package plugin.R6S.listener;
 
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import plugin.R6S.api.Gun;
 import plugin.R6S.api.Teaming;
 
 public class ManageInteracting implements Listener {
 	@EventHandler
-	public static void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+	public static void onPlayerInteractEntity(PlayerInteractAtEntityEvent event) { // previously used PlayerInteractEntityEvent
 		Player player = event.getPlayer();
 		if (event.getRightClicked() instanceof LivingEntity) {
 			LivingEntity target = (LivingEntity) event.getRightClicked();
@@ -27,7 +29,9 @@ public class ManageInteracting implements Listener {
 						return;
 					}
 				}
-				Object args[] = { "interact", target };
+				Vector vec = event.getClickedPosition();
+				Location loc = new Location(player.getWorld(), vec.getX(), vec.getY(), vec.getZ());
+				Object args[] = {"interact", target, loc};
 				Gun.redirectGun(player, item, args);
 			}
 		}
